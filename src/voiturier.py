@@ -22,7 +22,7 @@ class Voiturier:
         Numéro identifiant le voiturier.
     """
 
-    def __init__(self, numVoiturier: int):
+    def __init__(self, numVoiturier: int) -> None:
         """
         Initialise un voiturier.
 
