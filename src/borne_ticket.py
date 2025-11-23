@@ -18,7 +18,7 @@ class BorneTicket:
     disponibles, de souscrire un abonnement et de choisir un mode de paiement.
     """
 
-    def deliverTicket(self, c: "Client") -> str:
+    def deliverTicket(self, c: Client) -> str:
         """
         Délivre un ticket pour le client donné.
 
@@ -46,7 +46,7 @@ class BorneTicket:
         """
         pass
 
-    def proposerAbonnements(self, c: "Client", p: "Parking") -> str:
+    def proposerAbonnements(self, c: Client, p: Parking) -> str:
         """
         Propose des offres d'abonnement au client.
 
@@ -64,7 +64,7 @@ class BorneTicket:
         """
         pass
 
-    def recupererInfosCarte(self, c: "Client") -> str:
+    def recupererInfosCarte(self, c: Client) -> str:
         """
         Récupère les informations de carte de paiement du client.
 

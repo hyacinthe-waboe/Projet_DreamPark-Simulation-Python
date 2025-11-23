@@ -17,7 +17,7 @@ class Maintenance(Service):
     d'une opération de maintenance sur une voiture.
     """
 
-    def effectuerMaintenance(self, v : Voiture):
+    def effectuerMaintenance(self, v : Voiture) -> None:
         """
         Effectue la maintenance prévue sur la voiture.
 

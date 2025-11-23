@@ -17,7 +17,7 @@ class Entretien(Service):
     d'un service (dateDemande, dateService, rapport).
     """
 
-    def effectuerEntretien(self):
+    def effectuerEntretien(self) -> None:
         """
         Effectue l'entretien prévu.
 

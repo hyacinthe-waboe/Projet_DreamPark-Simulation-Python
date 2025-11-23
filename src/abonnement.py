@@ -4,14 +4,14 @@ Abonnement.
 Ce module définit la classe Abonnement, qui représente un l'abonnement
 d'un client du parking DreamPark.
 """
-import contrat
+from contrat import Contrat
 
 
 class Abonnement:
     """
     Abonnement à un service de stationnement.
 
-    Attribue
+    Attribues
     ----------
     libelle : str
         Libellé de l'abonnement.
@@ -36,7 +36,7 @@ class Abonnement:
         """
         pass
 
-    def addContrat(self, contrat: contrat) :
+    def addContrat(self, contrat: Contrat) -> None :
         """
         Ajoute un contrat à cet abonnement.
 

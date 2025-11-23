@@ -6,14 +6,13 @@ service de stationnement.
 """
 
 from datetime import date
-import acces
-import abonnement
+from abonnement import Abonnement
 
 class Client:
     """
     Client du service de stationnement.
 
-    Attributes
+    Attribues
     ----------
     nom : str
         Nom du client.
@@ -27,14 +26,7 @@ class Client:
         Nombre de fréquentations du service par ce client.
     """
 
-    def __init__(
-        self,
-        nom: str,
-        adresse: str,
-        estAbonne: bool,
-        estSuperAbonne: bool,
-        nbFrequentations: int,
-    ):
+    def __init__(self, nom: str, adresse: str, estAbonne: bool, estSuperAbonne: bool,  nbFrequentations: int):
         """
         Initialise un client.
 
@@ -53,7 +45,7 @@ class Client:
         """
         pass
 
-    def sAbonner(self, ab: "abonnement") :
+    def sAbonner(self, ab: Abonnement) -> None :
         """
         Associe un abonnement à ce client.
 
@@ -64,17 +56,17 @@ class Client:
         """
         pass
 
-    def nouvelleVoiture(self, mma: str, haut: float, long: float) :
+    def nouvelleVoiture(self, imma: str, hautV: float, longV: float) -> None :
         """
         Déclare une nouvelle voiture pour ce client; si jamais le client en à une nouvelle.
 
         Parametres
         ----------
-        mma : str
+        imma : str
             Immatriculation de la voiture.
-        haut : float
+        hautV : float
             Hauteur du véhicule.
-        long : float
+        longV : float
             Longueur du véhicule.
         """
         pass
@@ -91,16 +83,11 @@ class Client:
         """
         pass
 
-    def demanderLivraison(
-        self,
-        dateLiv: date,
-        heure: int,
-        adresseLiv: str,
-    ) -> None:
+    def demanderLivraison(self, dateLiv: date, heure: int, adresseLiv: str) -> None:
         """
         Demande la livraison de la voiture à une date, heure et adresse données.
 
-        Parameters
+        Parametres
         ----------
         dateLiv : date
             Date de la livraison souhaitée.
@@ -117,11 +104,11 @@ class Client:
         """
         pass
 
-    def entrerParking(self, a: "acces") -> str:
+    def entrerParking(self, a) -> str:
         """
         Fait entrer le client dans le parking via un accès donné.
 
-        Parameters
+        Parametres
         ----------
         a : Acces
             Accès utilisé pour entrer dans le parking.

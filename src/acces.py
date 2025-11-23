@@ -6,8 +6,8 @@ au parking (borne d'entrée/sortie).
 """
 
 
-import client
-import voiture
+from client import Client
+from voiture import Voiture
 
 
 class Acces:
@@ -19,13 +19,13 @@ class Acces:
     d'affichage et lancement de la procédure d'entrée.
     """
 
-    def actionnerCamera(self, client: "client") :
+    def actionnerCamera(self, c : Client) -> Voiture:
         """
         Actionne la caméra pour le client donné.
 
         Parametres
         ----------
-        client : Client
+        c : Client
             Client qui se présente à l'accès.
 
         Returns
@@ -35,7 +35,7 @@ class Acces:
         """
         pass
 
-    def actionnerPanneau(self) :
+    def actionnerPanneau(self) -> str:
         """
         Actionne le panneau d'affichage associé à l'accès.
 
@@ -46,13 +46,13 @@ class Acces:
         """
         pass
 
-    def lancerProcedureEntree(self, client: "client") :
+    def lancerProcedureEntree(self, c : Client ) -> str :
         """
         Lance la procédure d'entrée pour un client.
 
         Parametres
         ----------
-        client : Client
+        c : Client
             Client qui souhaite entrer dans le parking.
 
         Returns

@@ -1,1 +1,5 @@
-doc/pydoc/
+# Doc HTML générée par pydoc (à générer avec gen_doc.py)
+doc/index.html
+doc/pydoc/*.html
+!doc/pydoc/.gitkeep
+

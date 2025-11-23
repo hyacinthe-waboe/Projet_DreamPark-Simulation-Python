@@ -6,7 +6,7 @@ informations sur une voiture passant devant l'accès, qui rentre dans le parking
 en sort etc...
 """
 
-import voiture
+from voiture import Voiture
 
 class Camera:
     """
@@ -16,7 +16,7 @@ class Camera:
     d'une voiture et lire son immatriculation.
     """
 
-    def capturerHauteur(self, v : voiture) -> float:
+    def capturerHauteur(self, v : Voiture) -> float:
         """
         Capture la hauteur d'une voiture.
 
@@ -32,7 +32,7 @@ class Camera:
         """
         pass
 
-    def capturerLongueur(self, v : voiture) -> float:
+    def capturerLongueur(self, v : Voiture) -> float:
         """
         Capture la longueur d'une voiture.
 
@@ -48,7 +48,7 @@ class Camera:
         """
         pass
 
-    def capturerImmatr(self, v : voiture) -> str:
+    def capturerImmatr(self, v : Voiture) -> str:
         """
         Capture l'immatriculation d'une voiture.
 

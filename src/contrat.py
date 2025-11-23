@@ -40,7 +40,7 @@ class Contrat:
         """
         pass
 
-    def rompreContrat(self):
+    def rompreContrat(self)-> None:
         """
         Rompt le contrat.
 

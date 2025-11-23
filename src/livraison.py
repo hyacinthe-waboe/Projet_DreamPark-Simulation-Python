@@ -17,7 +17,7 @@ class Livraison(Service):
     à une date et une heure prévues.
     """
 
-    def effectuerLivraison(self):
+    def effectuerLivraison(self) -> None:
         """
         Effectue la livraison prévue.
 
