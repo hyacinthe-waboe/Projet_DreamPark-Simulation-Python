@@ -54,9 +54,33 @@ class Place:
         _estLibre : bool
             True si la place est libre, False si elle est occupée.
         """
-        pass
+        self.idPlace = idPlace
+        self.numero = numero
+        self._niveau = niveau
+        self._longueur = longueur
+        self._hauteur = hauteur
+        self._estLibre = estLibre
+       
+        # le placement actuel.
+        self.placementActuel = None
+     
+    @property
+    def estLibre(self) -> bool:
+        return self._estLibre
 
-    def addPlacement(self, p : Placement) -> None:
+    @property
+    def niveau(self) -> str:
+        return self._niveau
+    
+    @property
+    def longueur(self) -> float:
+        return self._longueur
+    
+    @property
+    def hauteur(self) -> float:
+        return self._hauteur
+
+    def addPlacementP(self, p : Placement) -> None:
         """
         Ajoute un placement associé à cette place.
 
@@ -65,4 +89,5 @@ class Place:
         p :
             Placement à associer à la place.
         """
-        pass
+        self.placementActuel = p
+        self._estLibre = False

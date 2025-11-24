@@ -28,7 +28,14 @@ class TestBorneTicket(unittest.TestCase):
         - Vérifier que le ticket pourra ensuite être utilisé pour entrer
           dans le parking.
         """
-        pass
+        c = Client("NonAbo", "1 rue", False, False, 0)
+        borne = BorneTicket()
+        
+        ticket = borne.deliverTicket(c)
+        
+        self.assertIsInstance(ticket, str)
+        self.assertTrue(len(ticket) > 0)
+        self.assertTrue(ticket.startswith("TICKET-"))
 
     def test_deliver_ticket_client_deja_abonne(self):
         """
@@ -44,7 +51,12 @@ class TestBorneTicket(unittest.TestCase):
           * soit un ticket particulier est délivré, mais le cas doit être
             explicitement géré.
         """
-        pass
+        c = Client("Abo", "1 rue", True, False, 0)
+        borne = BorneTicket()
+        
+        ticket = borne.deliverTicket(c)
+        
+        self.assertIsNotNone(ticket)
 
     def test_proposer_services_liste_services_disponibles(self):
         """
@@ -57,7 +69,13 @@ class TestBorneTicket(unittest.TestCase):
           disponibles (maintenance, entretien, livraison, etc. selon les
           services définis dans le système).
         """
-        pass
+        borne = BorneTicket()
+        
+        msg = borne.proposerServices()
+        
+        self.assertIn("Maintenance", msg)
+        self.assertIn("Entretien", msg)
+        self.assertIn("Livraison", msg)
 
     def test_proposer_abonnements_client_non_abonne(self):
         """
@@ -71,7 +89,14 @@ class TestBorneTicket(unittest.TestCase):
         - Vérifier que la chaîne retournée décrit au moins une offre d'abonnement
           pertinente pour ce client.
         """
-        pass
+        c = Client("NonAbo", "1 rue", False, False, 0)
+        p = Parking(10, 10, 10, 1)
+        borne = BorneTicket()
+        
+        msg = borne.proposerAbonnements(c, p)
+        
+        self.assertIn("Abonnements", msg)
+        self.assertIn("Standard", msg)
 
     def test_proposer_abonnements_client_deja_abonne(self):
         """
@@ -85,7 +110,13 @@ class TestBorneTicket(unittest.TestCase):
         - Vérifier que le message retourné signale que le client possède déjà
           un abonnement, ou qu'aucune nouvelle offre n'est proposée.
         """
-        pass
+        c = Client("Abo", "1 rue", True, False, 0)
+        p = Parking(10, 10, 10, 1)
+        borne = BorneTicket()
+        
+        msg = borne.proposerAbonnements(c, p)
+        
+        self.assertIn("déjà abonné", msg)
 
     def test_recuperer_infos_carte_enregistre_donnees(self):
         """
@@ -100,7 +131,12 @@ class TestBorneTicket(unittest.TestCase):
         - Vérifier que ces informations peuvent être utilisées ensuite pour
           un paiement.
         """
-        pass
+        c = Client("Test", "1 rue", False, False, 0)
+        borne = BorneTicket()
+        
+        res = borne.recupererInfosCarte(c)
+        
+        self.assertIn("OK", res)
 
     def test_proposer_type_paiement_liste_modes_disponibles(self):
         """
@@ -113,7 +149,12 @@ class TestBorneTicket(unittest.TestCase):
           de paiement supportés (carte bancaire, espèces, etc.), conformément
           aux choix retenus dans le projet.
         """
-        pass
+        borne = BorneTicket()
+        
+        res = borne.proposerTypePaiement()
+        
+        self.assertIn("CB", res)
+        self.assertIn("Espèces", res)
 
 
 if __name__ == "__main__":

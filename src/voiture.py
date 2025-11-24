@@ -43,7 +43,12 @@ class Voiture:
         estDansParking : bool
             Indique si la voiture est présente dans le parking.
         """
-        pass
+        self.hauteur = hauteur
+        self.longueur = longueur
+        self.immatriculation = immatriculation
+        self.estDansParking = estDansParking
+
+        self.placementCourant = None #####################################################################################################Ajouté
 
     def addPlacementV(self, p: Placement) -> None :
         """

@@ -9,6 +9,7 @@ if SRC_DIR not in sys.path:
 import unittest
 from place import Place
 from placement import Placement
+from datetime import date
 
 
 class TestPlace(unittest.TestCase):
@@ -25,7 +26,13 @@ class TestPlace(unittest.TestCase):
           _longueur, _hauteur, _estLibre) correspondent aux valeurs passées
           au constructeur.
         """
-        pass
+        p = Place(idPlace="A1", numero=1, niveau="A", longueur=5.0, hauteur=2.5, estLibre=True)
+        
+        self.assertEqual(p.idPlace, "A1")
+        self.assertEqual(p.numero, 1)
+        self.assertEqual(p.niveau, "A")
+        self.assertEqual(p.longueur, 5.0)
+        self.assertTrue(p.estLibre)
 
     def test_place_libre_au_depart(self):
         """
@@ -37,7 +44,9 @@ class TestPlace(unittest.TestCase):
         - Vérifier que l'état interne de la place reflète bien qu'elle est libre
           (par exemple via _estLibre ou une future méthode d'accès).
         """
-        pass
+        p = Place("A1", 1, "A", 5.0, 2.5, estLibre=True)
+        
+        self.assertTrue(p.estLibre)
 
     def test_place_occupee_au_depart(self):
         """
@@ -49,7 +58,9 @@ class TestPlace(unittest.TestCase):
         - Vérifier que l'état interne de la place reflète bien qu'elle est
           occupée.
         """
-        pass
+        p = Place("A1", 1, "A", 5.0, 2.5, estLibre=False)
+        
+        self.assertFalse(p.estLibre)
 
     def test_add_placement_associe_placement_a_la_place(self):
         """
@@ -63,7 +74,13 @@ class TestPlace(unittest.TestCase):
           interne de la place.
         - Vérifier éventuellement que la place n'est plus considérée comme libre.
         """
-        pass
+        p = Place("A1", 1, "A", 5.0, 2.5, estLibre=True)
+        placement = Placement(date.today(), date.today(), True)
+        
+        p.addPlacementP(placement)
+        
+        self.assertEqual(p.placementActuel, placement)
+        self.assertFalse(p.estLibre)
 
     def test_add_placement_sur_place_deja_occupee(self):
         """
@@ -76,7 +93,18 @@ class TestPlace(unittest.TestCase):
         - soit elle gère explicitement ce cas (par exemple file d'attente,
           ou remplacement), mais ce comportement doit être testé.
         """
-        pass
+        p = Place("A1", 1, "A", 5.0, 2.5, estLibre=False)
+        placement1 = Placement(date.today(), date.today(), False)
+        placement2 = Placement(date.today(), date.today(), True)
+
+        # On suppose qu'un premier placement existait
+        p.addPlacementP(placement1)
+        
+        # On en ajoute un nouveau
+        p.addPlacementP(placement2)
+        
+        self.assertEqual(p.placementActuel, placement2)
+        self.assertFalse(p.estLibre)
 
     def test_identifiant_place_coherent_avec_niveau_et_numero(self):
         """
@@ -90,7 +118,11 @@ class TestPlace(unittest.TestCase):
         - Si l'idPlace est calculé automatiquement dans le futur, adapter le
           test pour refléter cette logique.
         """
-        pass
+        p = Place(idPlace="B15", numero=15, niveau="B", longueur=5.0, hauteur=2.5, estLibre=True)
+        
+        self.assertEqual(p.idPlace, "B15")
+        self.assertEqual(p.niveau, "B")
+        self.assertEqual(p.numero, 15)
 
 
 if __name__ == "__main__":

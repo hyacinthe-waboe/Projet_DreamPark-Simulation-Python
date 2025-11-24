@@ -8,7 +8,7 @@ services et d'abonnements, ainsi que la saisie des informations de paiement.
 
 from client import Client
 from parking import Parking
-
+import random
 
 class BorneTicket:
     """
@@ -33,7 +33,9 @@ class BorneTicket:
             Représentation du ticket délivré (par exemple un identifiant ou
             un code encodé).
         """
-        pass
+        # Generation d'un ID random
+        ticketId = f"TICKET-{random.randint(1000, 9999)}"
+        return ticketId
 
     def proposerServices(self) -> str:
         """
@@ -44,7 +46,7 @@ class BorneTicket:
         str
             Description des services proposés.
         """
-        pass
+        return "Services disponibles : Maintenance, Entretien, Livraison."
 
     def proposerAbonnements(self, c: Client, p: Parking) -> str:
         """
@@ -62,7 +64,10 @@ class BorneTicket:
         str
             Description des abonnements proposés.
         """
-        pass
+        if c.estAbonne:
+            return "Vous êtes déjà abonné."
+        
+        return "Abonnements disponibles : Standard, Premium, Pack Garanti."
 
     def recupererInfosCarte(self, c: Client) -> str:
         """
@@ -78,7 +83,7 @@ class BorneTicket:
         str
             Représentation des informations de carte collectées.
         """
-        pass
+        return "Lecture carte bancaire... OK"
 
     def proposerTypePaiement(self) -> str:
         """
@@ -89,4 +94,4 @@ class BorneTicket:
         str
             Description des modes de paiement proposés (cartes,espèce,paypal etc...).
         """
-        pass
+        return "Modes de paiement : CB, Espèces."

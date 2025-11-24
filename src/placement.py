@@ -38,7 +38,9 @@ class Placement:
         estEnCours : bool
             État initial du placement (en cours ou non).
         """
-        pass
+        self.dateDebut = dateDebut
+        self.dateFin = dateFin
+        self.estEnCours = estEnCours
 
     def partirPlace(self) -> None:
         """
@@ -47,4 +49,5 @@ class Placement:
         Cette méthode représente le départ de la voiture de la place
         de stationnement.
         """
-        pass
+        self.estEnCours = False
+        self.dateFin = date.today()

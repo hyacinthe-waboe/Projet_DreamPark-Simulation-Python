@@ -4,6 +4,8 @@ Téléporteur.
 Ce module définit la classe Teleporteur, qui est chargée de déplacer
 les voitures entre l'extérieur et les places de stationnement du parking.
 """
+
+from datetime import date
 from voiture import Voiture
 from place import Place
 from placement import Placement

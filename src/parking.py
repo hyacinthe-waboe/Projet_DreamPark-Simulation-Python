@@ -45,7 +45,30 @@ class Parking:
         nbNiveaux : int
             Nombre de niveaux du parking.
         """
-        pass
+        self._nbPlacesParNiveau = nbPlacesParNiveau
+        self._nbPlacesLibres = nbPlacesLibres 
+        self._prix = prix
+        self.nbNiveaux = nbNiveaux
+        
+        self.places = [] 
+        self.abonnements = [] 
+
+        # --- Initialisation automatique des places ---
+        # On génère les niveaux A, B, C...
+        for i in range(nbNiveaux):
+            nomNiveau = chr(65 + i) 
+            
+            for j in range(1, nbPlacesParNiveau + 1):
+                # On crée un ID unique ex: "A1", "B5"
+                id_p = f"{nomNiveau}{j}"
+                
+                p = Place(idPlace=id_p, numero=j, niveau=nomNiveau, 
+                          longueur=5.0, hauteur=2.5, estLibre=True)
+                
+                self.places.append(p)
+        
+        # On met à jour le compteur réel de places libres
+        self._nbPlacesLibres = len(self.places) 
 
     def rechercherPlace(self, v : Voiture) -> Place:
         """
@@ -61,7 +84,12 @@ class Parking:
         Place
             Place attribuée à la voiture.
         """
-        pass
+        for place in self.places:
+            if place.estLibre:
+                if (place.hauteur >= v.hauteur) and (place.longueur >= v.longueur):
+                    return place
+        
+        return None
 
     def NbPlacesLibresParNiveau(self, niveau: str) -> int:
         """
@@ -77,7 +105,11 @@ class Parking:
         int
             Nombre de places libres sur ce niveau.
         """
-        pass
+        count = 0
+        for place in self.places:
+            if place.niveau == niveau and place.estLibre:
+                count += 1
+        return count
 
     def addAbonnement(self, ab : Abonnement) -> None:
         """
@@ -88,4 +120,8 @@ class Parking:
         ab :
             Abonnement à enregistrer dans le parking.
         """
-        pass
+        self.abonnements.append(ab)
+
+    @property
+    def prix(self):
+        return self._prix

@@ -92,7 +92,7 @@ class TestTeleporteur(unittest.TestCase):
           téléporter la voiture faute de place disponible.
         """
         pass
-
+    
     def test_teleporterVoitureSuperAbonne_avec_voiture_non_super_abonne(self):
         """
         Vérifie que teleporterVoitureSuperAbonne() gère le cas où la voiture

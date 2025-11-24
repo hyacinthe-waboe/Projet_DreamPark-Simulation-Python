@@ -27,7 +27,13 @@ class TestAcces(unittest.TestCase):
         - Appeler actionnerCamera(client).
         - Vérifier que la Voiture retournée correspond à la voiture du client.
         """
-        pass
+        c = Client("Jean", "Rue A", False, False, 0)
+        c.nouvelleVoiture("AB-123-CD", 2.0, 4.0)
+        
+        v_detectee = self.acces.actionnerCamera(c)
+        
+        self.assertEqual(v_detectee, c.voiture)
+        self.assertEqual(v_detectee.immatriculation, "AB-123-CD")
 
     def test_actionner_camera_client_sans_voiture_declenche_erreur(self):
         """
@@ -38,7 +44,11 @@ class TestAcces(unittest.TestCase):
         - soit elle retourne une valeur spéciale (None) ou un message d'erreur,
           mais le cas doit être traité !
         """
-        pass
+        c = Client("Jean", "Rue A", False, False, 0)
+        # Pas de voiture affectée
+        
+        with self.assertRaises(ValueError):
+            self.acces.actionnerCamera(c)
 
     def test_actionner_panneau_affiche_places_disponibles(self):
         """
@@ -55,7 +65,9 @@ class TestAcces(unittest.TestCase):
         - Eventuellement rajouter des places dans le parking pour voir si le nombre
           de place libres décrementes. 
         """
-        pass
+        msg = self.acces.actionnerPanneau()
+        # Au départ 10 places libres (calculées dans le Parking)
+        self.assertIn("10 places disponibles", msg)
 
     def test_actionner_panneau_parking_complet(self):
         """
@@ -68,7 +80,13 @@ class TestAcces(unittest.TestCase):
         - Appeler actionnerPanneau().
         - Vérifier que le message retourné signale que le parking est complet.
         """
-        pass
+        # On occupe manuellement toutes les places
+        for p in self.parking.places:
+            p._estLibre = False
+        self.parking._nbPlacesLibres = 0 # Mise à jour manuelle pour le test
+        
+        msg = self.acces.actionnerPanneau()
+        self.assertIn("COMPLET", msg)
 
     def test_lancer_procedure_entree_client_abonne_place_disponible(self):
         """
@@ -83,7 +101,16 @@ class TestAcces(unittest.TestCase):
         - Appeler lancerProcedureEntree(client).
         - Vérifier que le résultat indique une entrée réussie.
         """
-        pass
+        c = Client("Marie", "Rue B", estAbonne=True, estSuperAbonne=False, nbFrequentations=5)
+        c.nouvelleVoiture("CC-888-DD", 1.5, 3.0)
+
+        resultat = self.acces.lancerProcedureEntree(c)
+        
+        # On vérifie le message de succès
+        self.assertIn("Bienvenue", resultat)
+        self.assertIn("Voiture garée", resultat)
+        # La voiture doit être garée
+        self.assertTrue(c.voiture.estDansParking)
 
     def test_lancer_procedure_entree_client_non_abonne(self):
         """
@@ -98,7 +125,13 @@ class TestAcces(unittest.TestCase):
           non-abonné (par exemple passage par la borne de ticket,
           proposition d'abonnement, etc.).
         """
-        pass
+        c = Client("Paul", "Rue C", estAbonne=False, estSuperAbonne=False, nbFrequentations=0)
+        c.nouvelleVoiture("XX-123-YY", 1.5, 3.0)
+        
+        resultat = self.acces.lancerProcedureEntree(c)
+        
+        self.assertIn("Bienvenue", resultat)
+        self.assertTrue(c.voiture.estDansParking)
 
     def test_lancer_procedure_entree_sans_place_disponible(self):
         """
@@ -113,7 +146,18 @@ class TestAcces(unittest.TestCase):
         - Vérifier que le résultat indique clairement que l'entrée est
           impossible faute de place disponible.
         """
-        pass
+        c = Client("Luc", "Rue D", False, False, 0)
+        c.nouvelleVoiture("ZZ-000-ZZ", 1.5, 3.0)
+        
+        # On sature le parking
+        for p in self.parking.places:
+            p._estLibre = False
+        self.parking._nbPlacesLibres = 0
+            
+        resultat = self.acces.lancerProcedureEntree(c)
+        
+        self.assertIn("aucune place disponible", resultat)
+        self.assertFalse(c.voiture.estDansParking)
 
 
 if __name__ == "__main__":

@@ -25,7 +25,12 @@ class TestVoiture(unittest.TestCase):
           _immatriculation, estDansParking) correspondent aux valeurs passées
           au constructeur.
         """
-        pass
+        v = Voiture(hauteur=1.8, longueur=4.5, immatriculation="XX-777-YY", estDansParking=False)
+        
+        self.assertEqual(v.hauteur, 1.8)
+        self.assertEqual(v.longueur, 4.5)
+        self.assertEqual(v.immatriculation, "XX-777-YY")
+        self.assertFalse(v.estDansParking)
 
     def test_initialisation_est_dans_parking_true(self):
         """
@@ -37,7 +42,9 @@ class TestVoiture(unittest.TestCase):
         - Vérifier que l'état interne reflète bien que la voiture est dans
           le parking.
         """
-        pass
+        v = Voiture(hauteur=1.8, longueur=4.5, immatriculation="XX-777-YY", estDansParking=True)
+        
+        self.assertTrue(v.estDansParking)
 
     def test_initialisation_est_dans_parking_false(self):
         """
@@ -49,7 +56,9 @@ class TestVoiture(unittest.TestCase):
         - Vérifier que l'état interne reflète bien que la voiture n'est pas
           dans le parking.
         """
-        pass
+        v = Voiture(hauteur=1.8, longueur=4.5, immatriculation="XX-777-YY", estDansParking=False)
+        
+        self.assertFalse(v.estDansParking)
 
     def test_addPlacementV_associe_placement_a_la_voiture(self):
         """

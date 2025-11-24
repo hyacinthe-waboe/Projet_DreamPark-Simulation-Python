@@ -8,6 +8,11 @@ au parking (borne d'entrée/sortie).
 
 from client import Client
 from voiture import Voiture
+from parking import Parking
+from camera import Camera
+from panneau_affichage import PanneauAffichage
+from borne_ticket import BorneTicket
+from teleporteur import Teleporteur
 
 
 class Acces:
@@ -18,6 +23,15 @@ class Acces:
     ou interagit avec le système : utilisation de la caméra, du panneau
     d'affichage et lancement de la procédure d'entrée.
     """
+    def __init__(self, parking: Parking, camera: Camera, panneau: PanneauAffichage, borne: BorneTicket, teleporteur: Teleporteur): #####################################################################################################Ajouté
+        """
+        On injecte les dependances : un acces est relie a un parking et possede des equipements.
+        """
+        self.parking = parking
+        self.camera = camera
+        self.panneau = panneau
+        self.borne = borne
+        self.teleporteur = teleporteur
 
     def actionnerCamera(self, c : Client) -> Voiture:
         """
@@ -33,7 +47,12 @@ class Acces:
         Voiture
             Voiture associée au client.
         """
-        pass
+        if not hasattr(c, 'voiture') or c.voiture is None:
+             raise ValueError("Le client n'a pas de voiture.")
+        
+        v = c.voiture
+        _ = self.camera.capturerImmatr(v)
+        return v
 
     def actionnerPanneau(self) -> str:
         """
@@ -44,7 +63,7 @@ class Acces:
         str
             Message affiché ou résultat de l'action sur le panneau.
         """
-        pass
+        return self.panneau.afficherNbPlacesDisponibles(self.parking)
 
     def lancerProcedureEntree(self, c : Client ) -> str :
         """
@@ -60,4 +79,29 @@ class Acces:
         str
             Résultat de la procédure d'entrée.
         """
-        pass
+        if not hasattr(c, 'voiture') or c.voiture is None:
+            return "Erreur : Pas de voiture."
+        
+        voitureClient = c.voiture
+
+        # Si le client est superabonée
+        if c.estSuperAbonne:
+            res = self.teleporteur.teleporterVoitureSuperAbonne(voitureClient)
+            return f"Bienvenue Super Abonné. {res}"
+        
+        # abonnée normal
+        placeTrouvee = self.parking.rechercherPlace(voitureClient)
+
+        if placeTrouvee is None:
+            return "Désolé, aucune place disponible pour votre véhicule."
+
+        # Délivrance ticket et Téléportation
+        ticket = self.borne.deliverTicket(c)
+        
+        # Teleportation de la voiture sur la place
+        placement = self.teleporteur.teleporterVoiture(voitureClient, placeTrouvee)
+        
+        if placement:
+            return f"Bienvenue. Ticket {ticket}. Voiture garée en place {placeTrouvee.idPlace}."
+        else:
+            return "Erreur technique lors de la téléportation."
