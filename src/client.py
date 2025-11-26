@@ -7,6 +7,7 @@ service de stationnement.
 
 from datetime import date
 from abonnement import Abonnement
+from voiture import Voiture
 
 class Client:
     """
@@ -43,7 +44,15 @@ class Client:
         nbFrequentations : int
             Nombre initial de fréquentations du service.
         """
-        pass
+        self.nom = nom
+        self.adresse = adresse
+        self.estAbonne = estAbonne
+        self.estSuperAbonne = estSuperAbonne
+        self.nbFrequentations = nbFrequentations
+
+        self.voiture = None 
+        self.abonnement = None 
+        self.demandesServices = []
 
     def sAbonner(self, ab: Abonnement) -> None :
         """
@@ -54,7 +63,8 @@ class Client:
         ab : Abonnement
             Abonnement à associer au client.
         """
-        pass
+        self.abonnement = ab
+        self.estAbonne = True
 
     def nouvelleVoiture(self, imma: str, hautV: float, longV: float) -> None :
         """
@@ -69,19 +79,21 @@ class Client:
         longV : float
             Longueur du véhicule.
         """
-        pass
+        self.voiture = Voiture(hauteur=hautV, longueur=longV, immatriculation=imma, estDansParking=False)
 
     def seDesabonner(self) -> None:
         """
         Met fin à l'abonnement du client, s'il existe.
         """
-        pass
+        if self.estAbonne and self.abonnement:
+            self.estAbonne = False
+            self.abonnement = None
 
     def demanderMaintenance(self) -> None:
         """
         Demande une opération de maintenance pour la voiture du client.
         """
-        pass
+        self.demandesServices.append("Maintenance")
 
     def demanderLivraison(self, dateLiv: date, heure: int, adresseLiv: str) -> None:
         """
@@ -96,13 +108,13 @@ class Client:
         adresseLiv : str
             Adresse de livraison de la voiture.
         """
-        pass
+        self.demandesServices.append(f"Livraison: {dateLiv} à {heure}h, {adresseLiv}")
 
     def demanderEntretien(self) -> None:
         """
         Demande une opération d'entretien pour la voiture du client.
         """
-        pass
+        self.demandesServices.append("Entretien")
 
     def entrerParking(self, a) -> str:
         """
@@ -118,4 +130,6 @@ class Client:
         str
             Résultat de la procédure d'entrée (message, identifiant, etc.).
         """
-        pass
+        self.nbFrequentations += 1
+
+        return a.lancerProcedureEntree(self)

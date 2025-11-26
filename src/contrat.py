@@ -38,7 +38,12 @@ class Contrat:
         estEnCours : bool
             État initial du contrat : True s'il est en cours, False sinon.
         """
-        pass
+        if dateFin < dateDebut:
+            raise ValueError(f"La date de fin ({dateFin}) ne peut pas être antérieure à la date de début ({dateDebut}).")
+        
+        self.dateDebut = dateDebut
+        self.dateFin = dateFin
+        self.estEnCours = estEnCours
 
     def rompreContrat(self)-> None:
         """
@@ -48,4 +53,5 @@ class Contrat:
         précise dont l'état et les dates sont modifiés est définie par
         l'implémentation.
         """
-        pass
+        self.estEnCours = False
+        self.dateFin = date.today()

@@ -43,12 +43,19 @@ class Voiture:
         estDansParking : bool
             Indique si la voiture est présente dans le parking.
         """
+        if hauteur <= 0:
+            raise ValueError(f"Erreur capteur : La hauteur détectée est invalide ({hauteur}).")
+        if longueur <= 0:
+            raise ValueError(f"Erreur capteur : La longueur détectée est invalide ({longueur}).")
+        if not immatriculation:
+            raise ValueError("Erreur capteur : Aucune immatriculation détectée.")
+        
         self.hauteur = hauteur
         self.longueur = longueur
         self.immatriculation = immatriculation
         self.estDansParking = estDansParking
 
-        self.placementCourant = None #####################################################################################################Ajouté
+        self.placementCourant = None 
 
     def addPlacementV(self, p: Placement) -> None :
         """
@@ -59,4 +66,5 @@ class Voiture:
         p : Placement
             Placement représentant l'occupation d'une place par la voiture.
         """
-        pass
+        self.placementCourant = p
+        self.estDansParking = True

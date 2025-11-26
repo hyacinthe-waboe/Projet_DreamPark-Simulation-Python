@@ -23,7 +23,11 @@ class TestAbonnement(unittest.TestCase):
         - Vérifier que les attributs internes de l'objet correspondent aux
           valeurs fournies au constructeur.
         """
-        pass
+        ab = Abonnement(libelle="PackGarantie", prix=10,estPackGar=False)
+        
+        self.assertEqual(ab.libelle, "PackGarantie")
+        self.assertEqual(ab.prix, 10)
+        self.assertFalse(ab.estPackGar)
 
     def test_initialisation_pack_garanti(self):
         """
@@ -32,7 +36,9 @@ class TestAbonnement(unittest.TestCase):
         - Créer un abonnement avec estPackGar=True.
         - Vérifier que l'attribut indiquant le pack garanti est bien positionné.
         """
-        pass
+        ab = Abonnement(libelle="PackGarantie", prix=10,estPackGar=True)
+
+        self.assertTrue(ab.estPackGar)
 
     def test_initialisation_prix_negatif_declenche_erreur(self):
         """
@@ -42,7 +48,9 @@ class TestAbonnement(unittest.TestCase):
         - Le constructeur doit détecter un prix invalide (négatif) et provoquer
           une erreur (par exemple ValueError) plutôt que d'accepter la valeur.
         """
-        pass
+        with self.assertRaises(ValueError):
+            ab = Abonnement(libelle="PackGarantie", prix=-10,estPackGar=True)
+        
 
     def test_add_contrat_ajoute_contrat_a_l_abonnement(self):
         """
@@ -55,7 +63,9 @@ class TestAbonnement(unittest.TestCase):
         - Vérifier que le contrat ajouté est bien enregistré dans la structure
           interne de l'abonnement.
         """
-        pass
+        ab = Abonnement("Standard", 50.0, False)
+        ab.addContrat("Test")
+        self.assertEqual(len(ab.contrats), 1)
 
     def test_add_contrat_peut_ajouter_plusieurs_contrats(self):
         """
@@ -67,7 +77,13 @@ class TestAbonnement(unittest.TestCase):
         - Appeler addContrat() pour chacun d'eux.
         - Vérifier que l'abonnement référence l'ensemble des contrats ajoutés.
         """
-        pass
+        ab = Abonnement("Pro", 100.0, True)
+
+        ab.addContrat("c1")
+        ab.addContrat("c2")
+
+        self.assertEqual(len(ab.contrats), 2)
+        self.assertEqual(ab.contrats, ["c1", "c2"])
 
 
 if __name__ == "__main__":

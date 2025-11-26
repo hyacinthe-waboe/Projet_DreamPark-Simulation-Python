@@ -11,7 +11,7 @@ from teleporteur import Teleporteur
 from voiture import Voiture
 from place import Place
 from placement import Placement
-
+from client import Client
 
 class TestTeleporteur(unittest.TestCase):
     """Tests de la classe Teleporteur."""
@@ -31,7 +31,21 @@ class TestTeleporteur(unittest.TestCase):
           * ce Placement est associé à la voiture et à la place,
           * la place n'est plus considérée comme libre.
         """
-        pass
+        teleporteur = Teleporteur()
+
+        place = Place("A1", 1, "A", 5.0, 2.5, estLibre=True)
+
+        voiture = Voiture(2.0, 4.0, "AB-123-CD", estDansParking=False)
+        
+        placement = teleporteur.teleporterVoiture(voiture, place)
+        
+        self.assertIsNotNone(placement, "Le placement ne doit pas être None")
+        self.assertIsInstance(placement, Placement)
+        
+        self.assertFalse(place.estLibre, "La place ne doit plus être libre")
+        self.assertTrue(voiture.estDansParking, "La voiture doit être marquée dans le parking")
+        self.assertEqual(place.placementActuel, placement)
+        self.assertEqual(voiture.placementCourant, placement)
 
     def test_teleporterVoiture_place_deja_occupee(self):
         """
@@ -47,7 +61,13 @@ class TestTeleporteur(unittest.TestCase):
           * soit en refusant la téléportation (exception, None, message),
           * soit en redirigeant vers une autre place, selon la logique choisie.
         """
-        pass
+        teleporteur = Teleporteur()
+        place = Place("A1", 1, "A", 5.0, 2.5, estLibre=False) # Déjà occupée
+        voiture = Voiture(2.0, 4.0, "AB-123-CD", estDansParking=False)
+        
+        resultat = teleporteur.teleporterVoiture(voiture, place)
+        
+        self.assertIsNone(resultat, "La téléportation doit échouer sur une place occupée")
 
     def test_teleporterVoiture_dimensions_incompatibles(self):
         """
@@ -62,7 +82,15 @@ class TestTeleporteur(unittest.TestCase):
         - Vérifier que la téléportation est refusée ou signalée (exception,
           valeur spéciale, message d'erreur, etc.).
         """
-        pass
+        teleporteur = Teleporteur()
+
+        place = Place("A1", 1, "A", 3.0, 2.0, estLibre=True)
+
+        voiture = Voiture(2.0, 5.0, "AB-123-CD", estDansParking=False)
+
+        resultat = teleporteur.teleporterVoiture(voiture, place)
+        
+        self.assertIsNone(resultat, "La téléportation doit échouer si la voiture est trop grande")
 
     def test_teleporterVoitureSuperAbonne_succes(self):
         """
@@ -76,7 +104,17 @@ class TestTeleporteur(unittest.TestCase):
         - Vérifier que la chaîne retournée indique une téléportation réussie
           dans le mode "super abonné" (accès privilégié, place spéciale, etc.).
         """
-        pass
+        client_vip = Client("VIP", "1 rue Riche", True, True, 100) 
+        
+        voiture = Voiture(1.5, 4.0, "VIP-1", estDansParking=False)
+        voiture.proprietaire = client_vip 
+
+        tele = Teleporteur()
+
+        resultat = tele.teleporterVoitureSuperAbonne(voiture)
+
+        self.assertTrue(resultat, "La téléportation aurait dû réussir pour un super abonné")
+        self.assertTrue(voiture.estDansParking)
 
     def test_teleporterVoitureSuperAbonne_sans_place_disponible(self):
         """
@@ -91,7 +129,11 @@ class TestTeleporteur(unittest.TestCase):
         - Vérifier que le résultat signale clairement l'impossibilité de
           téléporter la voiture faute de place disponible.
         """
-        pass
+        teleporteur = Teleporteur()
+        voiture = Voiture(2.0, 4.0, "VIP-001", estDansParking=False)
+        
+        msg = teleporteur.teleporterVoitureSuperAbonne(voiture)
+        self.assertIsNotNone(msg)
     
     def test_teleporterVoitureSuperAbonne_avec_voiture_non_super_abonne(self):
         """
@@ -106,7 +148,17 @@ class TestTeleporteur(unittest.TestCase):
           * refuse la téléportation en mode super abonné,
           * ou renvoie un message d'erreur ou d'inadéquation.
         """
-        pass
+        client_lambda = Client(nom="Paul", adresse="Rue B", estAbonne=True, estSuperAbonne=False, nbFrequentations=2)
+   
+        voiture = Voiture(hauteur=1.5, longueur=4.0, immatriculation="LAMBDA-1", estDansParking=False)
+        
+        voiture.proprietaire = client_lambda 
+
+        tele = Teleporteur()
+
+        resultat = tele.teleporterVoitureSuperAbonne(voiture)
+
+        self.assertFalse(resultat, "Le téléporteur aurait dû refuser la voiture (client non super abonné)")
 
 
 if __name__ == "__main__":

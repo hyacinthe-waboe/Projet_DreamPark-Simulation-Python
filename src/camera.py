@@ -30,7 +30,7 @@ class Camera:
         float
             Hauteur de la voiture.
         """
-        pass
+        return v.hauteur
 
     def capturerLongueur(self, v : Voiture) -> float:
         """
@@ -46,7 +46,7 @@ class Camera:
         float
             Longueur de la voiture.
         """
-        pass
+        return v.longueur
 
     def capturerImmatr(self, v : Voiture) -> str:
         """
@@ -62,4 +62,4 @@ class Camera:
         str
             Immatriculation lue par la caméra.
         """
-        pass
+        return v.immatriculation

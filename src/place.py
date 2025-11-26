@@ -64,21 +64,6 @@ class Place:
         # le placement actuel.
         self.placementActuel = None
      
-    @property
-    def estLibre(self) -> bool:
-        return self._estLibre
-
-    @property
-    def niveau(self) -> str:
-        return self._niveau
-    
-    @property
-    def longueur(self) -> float:
-        return self._longueur
-    
-    @property
-    def hauteur(self) -> float:
-        return self._hauteur
 
     def addPlacementP(self, p : Placement) -> None:
         """
@@ -91,3 +76,23 @@ class Place:
         """
         self.placementActuel = p
         self._estLibre = False
+
+    @property
+    def estLibre(self) -> bool:
+        return self._estLibre
+    
+    @estLibre.setter
+    def estLibre(self, valeur: bool):
+        self._estLibre = valeur
+
+    @property
+    def niveau(self) -> str:
+        return self._niveau
+    
+    @property
+    def longueur(self) -> float:
+        return self._longueur
+    
+    @property
+    def hauteur(self) -> float:
+        return self._hauteur

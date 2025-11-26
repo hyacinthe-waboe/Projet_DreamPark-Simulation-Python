@@ -35,7 +35,23 @@ class Teleporteur:
         Placement
             Placement associé à la voiture sur la place.
         """
-        pass
+        if not p.estLibre:
+            print(f"Erreur: La place {p.idPlace} est déjà occupée.")
+            return None
+
+        if (v.hauteur > p.hauteur) or (v.longueur > p.longueur):
+            print(f"Erreur: La voiture est trop grande pour la place {p.idPlace}.")
+            return None
+
+        nouveauPlacement = Placement(dateDebut=date.today(), dateFin=date.today(), estEnCours=True)
+
+        v.estDansParking = True   
+        p.estLibre = False
+
+        p.addPlacementP(nouveauPlacement)   
+        v.addPlacementV(nouveauPlacement)
+
+        return nouveauPlacement
 
     def teleporterVoitureSuperAbonne(self, v : Voiture ) -> str:
         """
@@ -52,4 +68,11 @@ class Teleporteur:
             Information sur le résultat de la téléportation
             (format à préciser lors de l'implémentation).
         """
-        pass
+        if not hasattr(v, 'proprietaire') or v.proprietaire is None:
+            return False
+
+        if not v.proprietaire.estSuperAbonne:
+            return False 
+        
+        v.estDansParking = True
+        return "Téléportation Super Abonné effectuée avec succès vers la zone VIP."

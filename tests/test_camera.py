@@ -26,7 +26,10 @@ class TestCamera(unittest.TestCase):
         - Vérifier que la valeur retournée correspond à la hauteur
           enregistrée dans la voiture.
         """
-        pass
+        v = Voiture(hauteur=2.2, longueur=4.0, immatriculation="H-TEST", estDansParking=False)
+        cam = Camera()
+        
+        self.assertEqual(cam.capturerHauteur(v), 2.2)
 
     def test_capturer_longueur_voiture_valide(self):
         """
@@ -40,7 +43,10 @@ class TestCamera(unittest.TestCase):
         - Vérifier que la valeur retournée correspond à la longueur
           enregistrée dans la voiture.
         """
-        pass
+        v = Voiture(hauteur=2.2, longueur=4.8, immatriculation="L-TEST", estDansParking=False)
+        cam = Camera()
+        
+        self.assertEqual(cam.capturerLongueur(v), 4.8)
 
     def test_capturer_immatr_voiture_valide(self):
         """
@@ -54,41 +60,10 @@ class TestCamera(unittest.TestCase):
         - Vérifier que la chaîne retournée est exactement l'immatriculation
           de la voiture.
         """
-        pass
-
-    def test_capturer_hauteur_voiture_non_initialisee(self):
-        """
-        Vérifie que capturerHauteur() gère le cas d'une voiture dont
-        la hauteur n'est pas correctement initialisée.
-
-        Comportement attendu :
-        - Soit la méthode lève une exception.
-        - soit elle retourne une valeur spéciale (None, -1, etc.).
-        """
-        pass
-
-    def test_capturer_longueur_voiture_non_initialisee(self):
-        """
-        Vérifie que capturerLongueur() gère le cas d'une voiture dont
-        la longueur n'est pas correctement initialisée.
-
-        Comportement attendu :
-        - Soit la méthode lève une exception.
-        - soit elle retourne une valeur spéciale (None, -1, etc.).
-        """
-        pass
-
-    def test_capturer_immatr_voiture_sans_immatriculation(self):
-        """
-        Vérifie que capturerImmatr() gère le cas d'une voiture sans
-        immatriculation enregistrée.
-
-        Comportement attendu :
-        - Soit une exception est levée,
-        - soit une valeur particulière est renvoyée (par ex. chaîne vide
-          ou message d'erreur).
-        """
-        pass
+        v = Voiture(hauteur=2.2, longueur=4.0, immatriculation="IMMAT-3", estDansParking=False)
+        cam = Camera()
+        
+        self.assertEqual(cam.capturerImmatr(v), "IMMAT-3")
 
 
 if __name__ == "__main__":

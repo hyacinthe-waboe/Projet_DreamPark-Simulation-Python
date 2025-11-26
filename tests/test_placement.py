@@ -24,7 +24,14 @@ class TestPlacement(unittest.TestCase):
         - Vérifier que les attributs internes (dateDebut, dateFin, estEnCours)
           correspondent exactement aux valeurs passées au constructeur.
         """
-        pass
+        d_debut = date(2023, 1, 1)
+        d_fin = date(2023, 1, 5)
+        
+        p = Placement(d_debut, d_fin, estEnCours=True)
+        
+        self.assertEqual(p.dateDebut, d_debut)
+        self.assertEqual(p.dateFin, d_fin)
+        self.assertTrue(p.estEnCours)
 
     def test_initialisation_date_fin_avant_date_debut_declenche_erreur(self):
         """
@@ -36,7 +43,11 @@ class TestPlacement(unittest.TestCase):
           placement (par exemple en levant une exception comme ValueError),
           plutôt que d'accepter un état incohérent.
         """
-        pass
+        d_debut = date(2023, 6, 1)
+        d_fin_invalide = date(2023, 1, 1) 
+
+        with self.assertRaises(ValueError):
+            Placement(d_debut, d_fin_invalide, True)
 
     def test_placement_en_cours_durant_la_periode(self):
         """
@@ -49,7 +60,16 @@ class TestPlacement(unittest.TestCase):
         - Vérifier que l'état estEnCours est compatible avec ces dates et que
           le placement est bien interprété comme toujours actif.
         """
-        pass
+        today = date.today()
+
+        d_debut = today - timedelta(days=1)
+        d_fin = today + timedelta(days=1)
+        
+        p = Placement(d_debut, d_fin, estEnCours=True)
+        
+        self.assertTrue(p.estEnCours)
+
+        self.assertEqual(p.dateDebut, d_debut)
 
     def test_partirPlace_met_est_en_cours_a_false(self):
         """
@@ -60,7 +80,11 @@ class TestPlacement(unittest.TestCase):
         - Appeler partirPlace().
         - Vérifier que estEnCours vaut désormais False.
         """
-        pass
+        p = Placement(date.today(), date.today(), estEnCours=True)
+
+        p.partirPlace()
+
+        self.assertFalse(p.estEnCours)
 
     def test_partirPlace_met_a_jour_date_fin_eventuellement(self):
         """
@@ -73,7 +97,14 @@ class TestPlacement(unittest.TestCase):
         - Vérifier que dateFin est mise à une valeur cohérente avec la date de
           départ effective (par exemple la date du jour).
         """
-        pass
+        d_debut = date.today()
+        d_fin_theorique = date.today().replace(year=date.today().year + 1)
+        
+        p = Placement(d_debut, d_fin_theorique, estEnCours=True)
+
+        p.partirPlace()
+
+        self.assertEqual(p.dateFin, date.today())
 
     def test_partirPlace_sur_placement_deja_termine(self):
         """
@@ -85,7 +116,17 @@ class TestPlacement(unittest.TestCase):
         - soit elle signale que le placement est déjà terminé (exception ou
           message), mais ce cas doit être explicitement géré.
         """
-        pass
+        hier = date.today() - timedelta(days=1)
+        avant_hier = date.today() - timedelta(days=2)
+
+        p = Placement(avant_hier, hier, estEnCours=False)
+
+        ancienne_date_fin = p.dateFin
+
+        p.partirPlace()
+        
+        self.assertFalse(p.estEnCours)
+        self.assertEqual(p.dateFin, ancienne_date_fin)
 
 
 if __name__ == "__main__":

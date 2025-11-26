@@ -53,7 +53,7 @@ class Parking:
         self.places = [] 
         self.abonnements = [] 
 
-        # --- Initialisation automatique des places ---
+        #Initialisation automatique des places
         # On génère les niveaux A, B, C...
         for i in range(nbNiveaux):
             nomNiveau = chr(65 + i) 

@@ -25,7 +25,13 @@ class TestContrat(unittest.TestCase):
         - Vérifier que les attributs internes (dateDebut, dateFin, estEnCours)
           correspondent aux valeurs passées au constructeur.
         """
-        pass
+        d1 = date(2023, 1, 1)
+        d2 = date(2023, 12, 31)
+        c = Contrat(d1, d2, True)
+        
+        self.assertEqual(c.dateDebut, d1)
+        self.assertEqual(c.dateFin, d2)
+        self.assertTrue(c.estEnCours)
 
     def test_initialisation_date_fin_avant_date_debut_declenche_erreur(self):
         """
@@ -36,7 +42,11 @@ class TestContrat(unittest.TestCase):
         - Si dateFin < dateDebut, le constructeur doit lever une exception
           (par exemple ValueError) au lieu d'accepter un contrat invalide.
         """
-        pass
+        d_debut = date(2023, 6, 1)
+        d_fin_invalide = date(2023, 1, 1) # Antérieure au début
+        
+        with self.assertRaises(ValueError):
+            Contrat(d_debut, d_fin_invalide, True)
 
     def test_contrat_est_en_cours_pendant_la_periode(self):
         """
@@ -49,7 +59,12 @@ class TestContrat(unittest.TestCase):
         - Créer un contrat avec estEnCours=True.
         - Vérifier que l'état est cohérent avec ces dates.
         """
-        pass
+        today = date.today()
+        demain = today + timedelta(days=1)
+        hier = today - timedelta(days=1)
+        
+        c = Contrat(hier, demain, estEnCours=True)
+        self.assertTrue(c.estEnCours)
 
     def test_contrat_non_en_cours_apres_date_fin(self):
         """
@@ -60,7 +75,11 @@ class TestContrat(unittest.TestCase):
         - L'attribut estEnCours est mis à jour automatiquement lorsqu'on
           met fin au contrat
         """
-        pass
+        hier = date.today() - timedelta(days=10)
+        avant_hier = date.today() - timedelta(days=20)
+        
+        c = Contrat(avant_hier, hier, estEnCours=False)
+        self.assertFalse(c.estEnCours)
 
     def test_rompre_contrat_met_est_en_cours_a_false(self):
         """
@@ -71,7 +90,14 @@ class TestContrat(unittest.TestCase):
         - Appeler rompreContrat().
         - Vérifier que estEnCours vaut désormais False.
         """
-        pass
+        d_debut = date.today()
+        d_fin = date.today().replace(year=date.today().year + 1)
+        
+        c = Contrat(d_debut, d_fin, True)
+        
+        c.rompreContrat()
+        
+        self.assertFalse(c.estEnCours)
 
     def test_rompre_contrat_met_a_jour_date_fin_eventuellement(self):
         """
@@ -83,7 +109,14 @@ class TestContrat(unittest.TestCase):
         - Le test devra vérifier que dateFin est cohérente avec cette logique
           si elle est retenue.
         """
-        pass
+        d_debut = date(2020, 1, 1)
+        d_fin_initiale = date(2025, 1, 1)
+        
+        c = Contrat(d_debut, d_fin_initiale, True)
+        
+        c.rompreContrat()
+        
+        self.assertEqual(c.dateFin, date.today())
 
 
 if __name__ == "__main__":

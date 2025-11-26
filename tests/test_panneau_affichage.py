@@ -25,7 +25,12 @@ class TestPanneauAffichage(unittest.TestCase):
         - Appeler afficherNbPlacesDisponibles(parking).
         - Vérifier que la chaîne retournée mentionne le nombre de places libres.
         """
-        pass
+        p = Parking(nbPlacesParNiveau=10, nbPlacesLibres=10, prix=10, nbNiveaux=1)
+        panneau = PanneauAffichage()
+        
+        msg = panneau.afficherNbPlacesDisponibles(p)
+        
+        self.assertIn("10 places disponibles", msg)
 
     def test_afficher_nb_places_disponibles_parking_complet(self):
         """
@@ -39,7 +44,17 @@ class TestPanneauAffichage(unittest.TestCase):
         - Vérifier que le message retourné signale clairement que le parking
           est complet (ou qu'il n'y a aucune place disponible).
         """
-        pass
+        p = Parking(nbPlacesParNiveau=10, nbPlacesLibres=0, prix=10, nbNiveaux=1)
+        
+        for place in p.places:
+            place._estLibre = False
+        p._nbPlacesLibres = 0
+        
+        panneau = PanneauAffichage()
+        
+        msg = panneau.afficherNbPlacesDisponibles(p)
+        
+        self.assertIn("COMPLET", msg)
 
     def test_afficher_nb_places_disponibles_une_seule_place(self):
         """
@@ -53,7 +68,12 @@ class TestPanneauAffichage(unittest.TestCase):
         - Vérifier que le message retourné indique correctement qu'il reste
           une seule place (gestion éventuelle du singulier/pluriel).
         """
-        pass
+        p = Parking(nbPlacesParNiveau=1, nbPlacesLibres=1, prix=10, nbNiveaux=1)
+        panneau = PanneauAffichage()
+        
+        msg = panneau.afficherNbPlacesDisponibles(p)
+        
+        self.assertIn("1 places disponibles", msg)
 
     def test_afficher_nb_places_disponibles_valeur_incoherente(self):
         """
@@ -67,7 +87,16 @@ class TestPanneauAffichage(unittest.TestCase):
             * soit signaler l'erreur (message particulier, exception, etc.).
         - Le test devra vérifier le comportement retenu.
         """
-        pass
+        p = Parking(nbPlacesParNiveau=1, nbPlacesLibres=1, prix=10, nbNiveaux=1)
+        p.places = [] 
+        
+        p._nbPlacesLibres = -5 
+        
+        panneau = PanneauAffichage()
+        
+        msg = panneau.afficherNbPlacesDisponibles(p)
+        
+        self.assertIn("Erreur", msg)
 
 
 if __name__ == "__main__":

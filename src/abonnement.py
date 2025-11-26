@@ -34,7 +34,13 @@ class Abonnement:
         estPackGar : bool
             True si l'abonnement est un pack garanti, False sinon.
         """
-        pass
+        if prix < 0:
+            raise ValueError(f"Le prix de l'abonnement ne peut pas être négatif : {prix}")
+        
+        self.libelle = libelle
+        self.prix = prix
+        self.estPackGar = estPackGar
+        self.contrats = [] 
 
     def addContrat(self, contrat: Contrat) -> None :
         """
@@ -45,4 +51,4 @@ class Abonnement:
         contrat : Contrat
             Contrat associé à cet abonnement.
         """
-        pass
+        self.contrats.append(contrat)

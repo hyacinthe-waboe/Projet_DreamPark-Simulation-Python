@@ -10,11 +10,28 @@ import unittest
 from acces import Acces
 from client import Client
 from voiture import Voiture
+from parking import Parking
+from camera import Camera
+from panneau_affichage import PanneauAffichage
+from borne_ticket import BorneTicket
+from teleporteur import Teleporteur
 
 
 
 class TestAcces(unittest.TestCase):
     """Tests de la classe Acces."""
+
+    def setUp(self):
+        """
+        Initialisation commune pour les tests.
+        """
+        self.parking = Parking(10, 10, 10, 1)
+        self.camera = Camera()
+        self.panneau = PanneauAffichage()
+        self.borne = BorneTicket()
+        self.teleporteur = Teleporteur()
+
+        self.acces = Acces(self.parking, self.camera, self.panneau, self.borne, self.teleporteur)
 
     def test_actionner_camera_client_avec_voiture(self):
         """
@@ -45,7 +62,6 @@ class TestAcces(unittest.TestCase):
           mais le cas doit être traité !
         """
         c = Client("Jean", "Rue A", False, False, 0)
-        # Pas de voiture affectée
         
         with self.assertRaises(ValueError):
             self.acces.actionnerCamera(c)
@@ -66,7 +82,7 @@ class TestAcces(unittest.TestCase):
           de place libres décrementes. 
         """
         msg = self.acces.actionnerPanneau()
-        # Au départ 10 places libres (calculées dans le Parking)
+
         self.assertIn("10 places disponibles", msg)
 
     def test_actionner_panneau_parking_complet(self):
@@ -80,10 +96,10 @@ class TestAcces(unittest.TestCase):
         - Appeler actionnerPanneau().
         - Vérifier que le message retourné signale que le parking est complet.
         """
-        # On occupe manuellement toutes les places
+
         for p in self.parking.places:
             p._estLibre = False
-        self.parking._nbPlacesLibres = 0 # Mise à jour manuelle pour le test
+        self.parking._nbPlacesLibres = 0 
         
         msg = self.acces.actionnerPanneau()
         self.assertIn("COMPLET", msg)
@@ -106,10 +122,9 @@ class TestAcces(unittest.TestCase):
 
         resultat = self.acces.lancerProcedureEntree(c)
         
-        # On vérifie le message de succès
         self.assertIn("Bienvenue", resultat)
         self.assertIn("Voiture garée", resultat)
-        # La voiture doit être garée
+
         self.assertTrue(c.voiture.estDansParking)
 
     def test_lancer_procedure_entree_client_non_abonne(self):
@@ -149,7 +164,6 @@ class TestAcces(unittest.TestCase):
         c = Client("Luc", "Rue D", False, False, 0)
         c.nouvelleVoiture("ZZ-000-ZZ", 1.5, 3.0)
         
-        # On sature le parking
         for p in self.parking.places:
             p._estLibre = False
         self.parking._nbPlacesLibres = 0

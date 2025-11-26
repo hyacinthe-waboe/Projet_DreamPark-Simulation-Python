@@ -9,6 +9,7 @@ if SRC_DIR not in sys.path:
 import unittest
 from voiture import Voiture
 from placement import Placement
+from datetime import date
 
 
 class TestVoiture(unittest.TestCase):
@@ -73,7 +74,13 @@ class TestVoiture(unittest.TestCase):
         - Vérifier éventuellement que estDansParking passe à True si la
           voiture est considérée comme entrée dans le parking.
         """
-        pass
+        v = Voiture(1.8, 4.5, "XX-777-YY", False)
+        p = Placement(date.today(), date.today(), True)
+        
+        v.addPlacementV(p)
+        
+        self.assertEqual(v.placementCourant, p)
+        self.assertTrue(v.estDansParking)
 
     def test_addPlacementV_plusieurs_placements(self):
         """
@@ -86,9 +93,16 @@ class TestVoiture(unittest.TestCase):
         - Appeler addPlacementV() pour chacun d'eux.
         - Vérifier que tous les placements sont bien enregistrés.
         """
-        pass
+        v = Voiture(1.8, 4.5, "XX-777-YY", False)
+        p1 = Placement(date.today(), date.today(), False)
+        p2 = Placement(date.today(), date.today(), True)
+        
+        v.addPlacementV(p1)
+        v.addPlacementV(p2) 
+        
+        self.assertEqual(v.placementCourant, p2)
 
-    def test_immatriculation_valide_non_vide(self):
+    def test_immatriculation_invalide(self):
         """
         Vérifie que l'initialisation refuse ou signale une immatriculation
         vide ou invalide.
@@ -98,8 +112,28 @@ class TestVoiture(unittest.TestCase):
         - Vérifier que ce cas est refusé (exception) ou signalé, plutôt que
           d'accepter silencieusement une immatriculation incohérente.
         """
-        pass
+        with self.assertRaises(ValueError):
+            Voiture(1.8, 4.5, "", False)
+            
+        with self.assertRaises(ValueError):
+            Voiture(1.8, 4.5, None, False)
 
+    def test_hauteur_invalide_leve_exception(self):
+        """Vérifie qu'une hauteur négative ou nulle est refusée."""
+        with self.assertRaises(ValueError):
+            Voiture(-1.0, 4.0, "TEST", False)
+        
+        # Hauteur nulle
+        with self.assertRaises(ValueError):
+            Voiture(0.0, 4.0, "TEST", False)
+
+    def test_longueur_invalide_leve_exception(self):
+        """Vérifie qu'une longueur négative ou nulle est refusée."""
+        with self.assertRaises(ValueError):
+            Voiture(1.5, -4.0, "TEST", False)
+            
+        with self.assertRaises(ValueError):
+            Voiture(1.5, 0.0, "TEST", False)
 
 if __name__ == "__main__":
     unittest.main()

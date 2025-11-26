@@ -32,4 +32,12 @@ class PanneauAffichage:
             Message à afficher sur le panneau (par exemple : "35 places
             disponibles").
         """
-        pass
+        nb = p._nbPlacesLibres
+        
+        if nb < 0:
+            return "Erreur technique (Valeur négative)"
+
+        if nb == 0:
+            return "COMPLET"
+            
+        return f"{nb} places disponibles"

@@ -78,10 +78,8 @@ class TestParking(unittest.TestCase):
         - Vérifier que :
           * aucune place n'est retournée (par exemple None).
         """
-        # Parking standard (5.0m x 2.5m)
         p = Parking(nbPlacesParNiveau=5, nbPlacesLibres=5, prix=10, nbNiveaux=1)
         
-        # Voiture trop longue (6.0m > 5.0m)
         v_longue = Voiture(hauteur=2.0, longueur=6.0, immatriculation="XX-999-XX", estDansParking=False)
       
         resultat = p.rechercherPlace(v_longue)
@@ -103,7 +101,6 @@ class TestParking(unittest.TestCase):
         p = Parking(nbPlacesParNiveau=2, nbPlacesLibres=2, prix=10, nbNiveaux=1)
         v = Voiture(hauteur=1.5, longueur=3.0, immatriculation="AA-000-BB", estDansParking=False)
         
-        # On simule un parking complet en occupant manuellement les places
         for place in p.places:
             place._estLibre = False
           
@@ -121,15 +118,12 @@ class TestParking(unittest.TestCase):
         - Appeler NbPlacesLibresParNiveau('A').
         - Vérifier que la valeur retournée correspond au nombre de places initial.
         """
-        # 10 places par niveau, 2 niveaux (A et B)
         p = Parking(nbPlacesParNiveau=10, nbPlacesLibres=20, prix=10, nbNiveaux=2)
         
-        # Au départ, tout est libre
         nb_libres_A = p.NbPlacesLibresParNiveau('A')
         self.assertEqual(nb_libres_A, 10)
 
-        # On occupe une place au niveau A pour vérifier le changement
-        p.places[0]._estLibre = False # Occupe A1
+        p.places[0]._estLibre = False 
         
         nb_libres_A_apres = p.NbPlacesLibresParNiveau('A')
         self.assertEqual(nb_libres_A_apres, 9)
@@ -145,7 +139,6 @@ class TestParking(unittest.TestCase):
         """
         p = Parking(nbPlacesParNiveau=5, nbPlacesLibres=5, prix=10, nbNiveaux=1)
         
-        # Le niveau 'Z' n'existe pas
         resultat = p.NbPlacesLibresParNiveau('Z')
         
         self.assertEqual(resultat, 0)
