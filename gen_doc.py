@@ -4,20 +4,29 @@ import pydoc
 
 RACINE = os.path.dirname(os.path.abspath(__file__))
 
+
 SRC_DIR = os.path.join(RACINE, "src")
 if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
-TESTS_DIR = os.path.join(RACINE, "tests")   
-if TESTS_DIR not in sys.path:              
+TESTS_DIR = os.path.join(RACINE, "tests")
+if TESTS_DIR not in sys.path:
     sys.path.insert(0, TESTS_DIR)
 
+STAT_SRC_DIR = os.path.join(RACINE, "src", "stats")
+if STAT_SRC_DIR not in sys.path:
+    sys.path.insert(0, STAT_SRC_DIR)
 
-DOC_DIR1 = os.path.join(RACINE, "doc")
-os.makedirs(DOC_DIR1, exist_ok=True)
+STAT_TESTS_DIR = os.path.join(RACINE, "tests", "stats")
+if STAT_TESTS_DIR not in sys.path:
+    sys.path.insert(0, STAT_TESTS_DIR)
 
-DOC_DIR2 = os.path.join(RACINE, "doc", "pydoc")
-os.makedirs(DOC_DIR2, exist_ok=True)
+DOC_DIR = os.path.join(RACINE, "doc")
+os.makedirs(DOC_DIR, exist_ok=True)
+
+PYDOC_DIR = os.path.join(DOC_DIR, "pydoc")
+os.makedirs(PYDOC_DIR, exist_ok=True)
+
 
 MODULES_CLASSES = [
     "client",
@@ -37,6 +46,11 @@ MODULES_CLASSES = [
     "teleporteur",
     "voiture",
     "voiturier",
+]
+
+MODULES_CLASSES_STAT = [
+    "statistiques",
+    "historique",
 ]
 
 MODULES_TESTS = [
@@ -59,9 +73,21 @@ MODULES_TESTS = [
     "test_voiturier",
 ]
 
-ALL_MODULES = MODULES_CLASSES + MODULES_TESTS
+MODULES_TESTS_STAT = [
+    # "test_statistiques",
+    # "test_historique",
+]
 
-os.chdir(DOC_DIR2)
+
+ALL_MODULES = (
+    MODULES_CLASSES
+    + MODULES_TESTS
+    + MODULES_CLASSES_STAT
+    + MODULES_TESTS_STAT
+)
+
+
+os.chdir(PYDOC_DIR)
 
 for module_name in ALL_MODULES:
     print(f"Génération de la doc pour {module_name}...")
@@ -72,7 +98,7 @@ for module_name in ALL_MODULES:
 
 
 for module_name in ALL_MODULES:
-    html_path = os.path.join(DOC_DIR2, f"{module_name}.html")
+    html_path = os.path.join(PYDOC_DIR, f"{module_name}.html")
     if not os.path.exists(html_path):
         continue
 
@@ -88,7 +114,8 @@ for module_name in ALL_MODULES:
         with open(html_path, "w", encoding="utf-8") as f:
             f.write(contenu)
 
-index_path = os.path.join(DOC_DIR1, "index.html")
+
+index_path = os.path.join(DOC_DIR, "index.html")
 with open(index_path, "w", encoding="utf-8") as f:
     f.write("<!DOCTYPE html>\n<html>\n<head>\n")
     f.write("<meta charset='utf-8'>\n")
@@ -107,8 +134,12 @@ with open(index_path, "w", encoding="utf-8") as f:
         f.write(f"  <li><a href='pydoc/{module_name}.html'>{module_name}</a></li>\n")
     f.write("</ul>\n")
 
+    f.write("<h2>Modules statistiques</h2>\n<ul class='modules-list'>\n")
+    for module_name in MODULES_CLASSES_STAT:
+        f.write(f"  <li><a href='pydoc/{module_name}.html'>{module_name}</a></li>\n")
+    f.write("</ul>\n")
+
     f.write("</body>\n</html>\n")
 
-print(f"\nDocumentation générée dans : {DOC_DIR2}")
+print(f"\nDocumentation générée dans : {PYDOC_DIR}")
 print("Ouvre doc/index.html dans ton navigateur pour la consulter.")
-
