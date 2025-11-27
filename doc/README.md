@@ -24,6 +24,7 @@ La documentation technique n’est pas versionnée. Pour la générer localement
 
 ```bash
 python gen_doc.py
+```
 
 ## Partie 1 – Implémentation du cas d'utilisation : Se Garer
 
@@ -75,3 +76,4 @@ Pour vérifier le bon fonctionnement de la Partie 1, exécuter la suite de tests
 
 ```bash
 python -m unittest discover tests
+```
