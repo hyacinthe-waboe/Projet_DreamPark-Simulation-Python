@@ -7,7 +7,7 @@ if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from maintenance import Maintenance
 from voiture import Voiture
 
@@ -26,7 +26,16 @@ class TestMaintenance(unittest.TestCase):
         - Vérifier que les attributs internes (dateDemande, dateService,
           rapport) correspondent aux valeurs fournies.
         """
-        pass
+
+    def setUp(self):
+        """Instanciation des objets communs aux tests."""
+        self.today = date.today()
+        self.demain = self.today + timedelta(days=1)
+        self.hier = self.today - timedelta(days=1)
+        self.rapport = "Je suis le rapport"
+
+        self.maintenance = Maintenance(self.today, self.demain, self.rapport)
+        self.voiture = Voiture(1.80,2,"TEST-MAINT", True)
 
     def test_effectuer_maintenance_met_a_jour_rapport(self):
         """
@@ -39,7 +48,10 @@ class TestMaintenance(unittest.TestCase):
         - Vérifier qu'un rapport de maintenance détaillé est enregistré
           (contenu non vide, décrivant par exemple les opérations effectuées).
         """
-        pass
+        self.assertEqual(self.maintenance.dateDemande, self.today)
+        self.assertEqual(self.maintenance.dateService, self.demain)
+        self.assertEqual(self.maintenance.rapport, self.rapport)
+        self.assertIsInstance(self.maintenance, Maintenance)
 
     def test_effectuer_maintenance_met_a_jour_date_service_si_non_fixee(self):
         """
@@ -53,7 +65,9 @@ class TestMaintenance(unittest.TestCase):
         - Vérifier que dateService est mise à la date du jour ou à une
           date cohérente avec l'exécution de la maintenance.
         """
-        pass
+        self.maintenance.effectuerMaintenance(self.voiture)
+
+        self.assertEqual(self.maintenance.dateService, self.today)
 
     def test_effectuer_maintenance_sur_voiture_valide(self):
         """
@@ -68,7 +82,10 @@ class TestMaintenance(unittest.TestCase):
           cette voiture (par exemple via une mise à jour de l'état ou
           du rapport).
         """
-        pass
+        self.maintenance.effectuerMaintenance(self.voiture)
+
+        self.assertIsInstance(self.maintenance.rapport, str)
+        self.assertIn("maintenance", self.maintenance.rapport.lower())
 
     def test_effectuer_maintenance_sans_voiture_valide(self):
         """
@@ -81,7 +98,8 @@ class TestMaintenance(unittest.TestCase):
         - Vérifier que ce cas est refusé ou signalé (exception, message
           d'erreur, etc.), conformément aux règles qui seront définies.
         """
-        pass
+        with self.assertRaises(ValueError):
+          self.maintenance.effectuerMaintenance(None)
 
     def test_effectuer_maintenance_plusieurs_fois(self):
         """
@@ -94,7 +112,15 @@ class TestMaintenance(unittest.TestCase):
         - soit la méthode signale que la maintenance a déjà été effectuée
           (via une exception ou un indicateur dans le rapport).
         """
-        pass
+        self.maintenance.effectuerMaintenance(self.voiture)
+        rapport_apres_premier = self.maintenance.rapport
+        date_service_apres_premier = self.maintenance.dateService
+
+        with self.assertRaises(ValueError):
+          self.maintenance.effectuerMaintenance(self.voiture)
+
+        self.assertEqual(self.maintenance.rapport, rapport_apres_premier)
+        self.assertEqual(self.maintenance.dateService, date_service_apres_premier)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,6 @@ if SRC_DIR not in sys.path:
 import unittest
 from acces import Acces
 from client import Client
-from voiture import Voiture
 from parking import Parking
 from camera import Camera
 from panneau_affichage import PanneauAffichage

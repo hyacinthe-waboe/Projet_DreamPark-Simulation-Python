@@ -8,12 +8,21 @@ if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
 import unittest
-from datetime import date
+from datetime import date, timedelta
 from entretien import Entretien
 
 
 class TestEntretien(unittest.TestCase):
     """Tests de la classe Entretien."""
+
+    def setUp(self):
+        """Instanciation des objets communs aux tests."""
+        self.today = date.today()
+        self.demain = self.today + timedelta(days=1)
+        self.hier = self.today - timedelta(days=1)
+        self.rapport = "Je suis le rapport"
+
+        self.entretien = Entretien(self.today, self.demain, self.rapport)
 
     def test_initialisation_entretien_avec_attributs_service(self):
         """
@@ -22,24 +31,31 @@ class TestEntretien(unittest.TestCase):
 
         Scénario prévu :
         - Choisir une date de demande et une date de service.
-        - Créer un Entretien avec ces dates et un rapport initial (éventuellement vide).
+        - Créer un Entretien avec ces dates et un rapport initial.
         - Vérifier que les attributs internes de l'objet (dateDemande,
           dateService, rapport) correspondent aux valeurs fournies.
         """
-        pass
+        self.assertEqual(self.entretien.dateDemande, self.today)
+        self.assertEqual(self.entretien.dateService, self.demain)
+        self.assertEqual(self.entretien.rapport, self.rapport)
+        self.assertIsInstance(self.entretien, Entretien)
 
     def test_effectuer_entretien_met_a_jour_rapport(self):
         """
         Vérifie que effectuerEntretien() met à jour le rapport d'entretien.
 
         Scénario prévu :
-        - Créer un Entretien avec un rapport initial (par exemple vide).
+        - Créer un Entretien avec un rapport initial.
         - Appeler effectuerEntretien().
         - Vérifier qu'un rapport d'entretien plus détaillé est enregistré
           (contenu non vide, éventuellement contenant certaines informations
           clés comme la nature des opérations réalisées).
         """
-        pass
+        self.entretien.effectuerEntretien()
+
+        self.assertIsInstance(self.entretien.rapport, str)
+        self.assertIn("entretien", self.entretien.rapport.lower())
+
 
     def test_effectuer_entretien_met_a_jour_date_service_si_non_fixee(self):
         """
@@ -52,7 +68,9 @@ class TestEntretien(unittest.TestCase):
         - Vérifier que dateService est mise à la date du jour ou à une date
           cohérente avec l'exécution de l'entretien.
         """
-        pass
+        self.entretien.effectuerEntretien()
+
+        self.assertEqual(self.entretien.dateService, date.today())
 
     def test_effectuer_entretien_ne_fait_rien_si_deja_effectue(self):
         """
@@ -65,21 +83,15 @@ class TestEntretien(unittest.TestCase):
         - soit elle lève une exception ou retourne une information indiquant
           que l'entretien a déjà été réalisé.
         """
-        pass
+        self.entretien.effectuerEntretien()
+        rapport_apres_premier = self.entretien.rapport
+        date_service_apres_premier = self.entretien.dateService
 
-    def test_effectuer_entretien_sur_date_anterieure_a_date_demande(self):
-        """
-        Vérifie que effectuerEntretien() ne permet pas de fixer une date
-        de service antérieure à la date de demande.
+        with self.assertRaises(ValueError):
+          self.entretien.effectuerEntretien()
 
-        Scénario possibles :
-        - Créer un Entretien avec une dateDemande donnée.
-        - Simuler un appel à effectuerEntretien() qui tenterait de placer
-          la dateService avant dateDemande.
-        - Vérifier que ce cas est refusé (exception, correction automatique,
-          etc.), conformément aux règles qui seront définies.
-        """
-        pass
+        self.assertEqual(self.entretien.rapport, rapport_apres_premier)
+        self.assertEqual(self.entretien.dateService, date_service_apres_premier)
 
 
 if __name__ == "__main__":

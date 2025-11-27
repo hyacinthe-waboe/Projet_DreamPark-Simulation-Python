@@ -6,7 +6,7 @@ planifié pour un véhicule.
 """
 
 from datetime import date
-
+from typing import Optional
 
 class Service:
     """
@@ -26,7 +26,7 @@ class Service:
         Rapport associé au service (compte-rendu, commentaire, etc.).
     """
 
-    def __init__(self, dateDemande: date, dateService: date, rapport: str):
+    def __init__(self, dateDemande: date, dateService: Optional[date], rapport: str):
         """
         Initialise un service.
 
@@ -39,4 +39,12 @@ class Service:
         rapport : str
             Rapport associé au service.
         """
-        pass
+        if dateService is not None and dateService < dateDemande:
+            raise ValueError("dateService ne peut pas être avant dateDemande")
+        
+        if rapport == "":
+            raise ValueError("Le rapport ne peut pas être vide")
+        
+        self.dateDemande = dateDemande
+        self.dateService = dateService
+        self.rapport = rapport 

@@ -77,3 +77,57 @@ Pour vérifier le bon fonctionnement de la Partie 1, exécuter la suite de tests
 ```bash
 python -m unittest discover tests
 ```
+
+## Partie 2 – Cas d'utilisation : Reprendre la voiture
+
+Cette branche (`Partie2`) correspond à l’implémentation du cas d’utilisation **« Reprendre la voiture »**, via la gestion des **services associés** (entretien, maintenance, livraison) et du **voiturier** chargé des livraisons physiques.
+
+### Objectifs
+
+- Mutualiser la logique des services via une classe de base `Service`.
+- Garantir la **cohérence temporelle** des services (`dateService` ≥ `dateDemande`, ou non définie au départ).
+- Empêcher l’exécution multiple d’un même service (entretien, maintenance, livraison).
+- Modéliser l’intervention du **voiturier** pour la sortie et la livraison des voitures.
+
+### Implémentation fonctionnelle (`src/`)
+
+- **`service.py`**  
+  Classe de base des services :  
+  - Attributs : `dateDemande`, `dateService`, `rapport`.  
+  - Règles : refus d’une `dateService` antérieure à `dateDemande` ; refus d’un rapport vide.
+
+- **`entretien.py`**  
+  Service d’**entretien** (nettoyage / révision légère) :  
+  - Attribut : `effectue` (booléen).  
+  - Méthode : `effectuerEntretien()` met à jour `dateService` (si besoin), le `rapport`, et empêche un second appel.
+
+- **`maintenance.py`**  
+  Service de **maintenance** technique :  
+  - Attributs : `maintenance` (booléen), `voiture`.  
+  - Méthode : `effectuerMaintenance(voiture)` vérifie la validité de la voiture, met à jour `dateService` et `rapport`, et interdit plusieurs exécutions.
+
+- **`livraison.py`**  
+  Service de **livraison** de la voiture à une adresse :  
+  - Attributs : `adresse`, `heureLivraison` (optionnel), `livree` (booléen).  
+  - Méthode : `effectuerLivraison()` vérifie l’adresse, met à jour `dateService` et le `rapport`, et empêche plusieurs livraisons pour le même service.
+
+- **`voiturier.py`**  
+  Représentation du **voiturier** chargé de sortir et livrer les voitures :  
+  - Attribut : `_numVoiturier` (numéro ≥ 0).  
+  - Méthode : `livrerVoiture(voiture, dateLivraison, heure)` vérifie voiture/date/heure, sort la voiture du parking (`estDansParking = False`) et refuse les livraisons invalides (heure hors plage, date passée, voiture déjà livrée, etc.).
+
+### Tests unitaires (`tests/`)
+
+- **`test_service.py`** : validation de l’initialisation de `Service` et des contraintes sur les dates / rapport.  
+- **`test_entretien.py`** : tests de `effectuerEntretien()` (mise à jour du rapport, de la date, exécution unique, cohérence avec `dateDemande`).  
+- **`test_maintenance.py`** : tests de `effectuerMaintenance(voiture)` (voiture valide/invalides, mise à jour de la date et du rapport, exécution unique).  
+- **`test_livraison.py`** : tests de `effectuerLivraison()` (rapport mis à jour, dateService mise en place, exécution unique, adresse obligatoire).  
+- **`test_voiturier.py`** : tests de l’initialisation du voiturier et de `livrerVoiture()` (voiture sortie du parking, heures et dates invalides, double livraison refusée).
+
+### Lancement des tests (Partie 2)
+
+Depuis la racine du projet :
+
+```bash
+python -m unittest discover tests
+```

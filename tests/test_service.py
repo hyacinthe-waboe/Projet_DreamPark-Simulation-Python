@@ -14,6 +14,17 @@ from service import Service
 class TestService(unittest.TestCase):
     """Tests de la classe Service."""
 
+    def setUp(self):
+        """
+        Instanciation des objets communes des classes
+        """
+        self.today = date.today()
+        self.demain = self.today + timedelta(days=1)
+        self.hier = self.today - timedelta(days=1)
+        self.rapport = "Je suis le rapport"
+
+        self.service = Service(self.today, self.demain, self.rapport)
+
     def test_initialisation_attributs_corrects(self):
         """
         Vérifie qu'un service est correctement initialisé avec les valeurs fournies.
@@ -25,7 +36,10 @@ class TestService(unittest.TestCase):
         - Vérifier que les attributs internes (dateDemande, dateService, rapport)
           correspondent exactement aux valeurs passées au constructeur.
         """
-        pass
+        self.assertEqual(self.service.dateDemande, self.today)
+        self.assertEqual(self.service.dateService, self.demain)
+        self.assertIsInstance(self.service.rapport, str)
+        self.assertIsInstance(self.service, Service)
 
     def test_initialisation_date_service_avant_date_demande_declenche_erreur(self):
         """
@@ -37,7 +51,8 @@ class TestService(unittest.TestCase):
           du service (par exemple en levant une exception comme ValueError),
           plutôt que d'accepter un service incohérent.
         """
-        pass
+        with self.assertRaises(ValueError):
+          Service(self.demain, self.hier, self.rapport)
 
     def test_initialisation_rapport_peut_etre_vide_ou_non(self):
         """
@@ -51,7 +66,8 @@ class TestService(unittest.TestCase):
             refuser un rapport vide.
         - Le test devra vérifier le comportement retenu.
         """
-        pass
+        with self.assertRaises(ValueError):
+          Service(self.today, self.demain, "")
 
     def test_service_planifie_date_service_dans_le_futur(self):
         """
@@ -64,7 +80,11 @@ class TestService(unittest.TestCase):
         - Vérifier que la dateService reflète bien une planification dans le futur
           et qu'elle est correctement enregistrée.
         """
-        pass
+        futur = self.today + timedelta(weeks=500)
+        service_planifie = Service(self.today, futur, self.rapport)
+
+        self.assertEqual(service_planifie.dateService, futur)
+        self.assertGreater(service_planifie.dateService, service_planifie.dateDemande)
 
     def test_service_immediat_date_service_egale_date_demande(self):
         """
@@ -76,8 +96,10 @@ class TestService(unittest.TestCase):
         - Vérifier que le service est accepté et que les deux dates sont bien
           enregistrées comme identiques.
         """
-        pass
+        service_immediat = Service(self.today, self.today, self.rapport)
 
+        self.assertEqual(service_immediat.dateService, self.today)
+        self.assertEqual(service_immediat.dateDemande, self.today)
 
 if __name__ == "__main__":
     unittest.main()

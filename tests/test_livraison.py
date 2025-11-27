@@ -14,6 +14,15 @@ from livraison import Livraison
 class TestLivraison(unittest.TestCase):
     """Tests de la classe Livraison."""
 
+    def setUp(self):
+        """Instanciation des objets communs aux tests."""
+        self.today = date.today()
+        self.rapport_initial = "Demande de livraison"
+        self.adresse_valide = "12 rue du Test"
+
+        self.livraison = Livraison(self.today, None, self.rapport_initial)
+
+
     def test_initialisation_livraison_avec_attributs_service(self):
         """
         Vérifie qu'une Livraison est correctement initialisée avec les
@@ -25,7 +34,12 @@ class TestLivraison(unittest.TestCase):
         - Vérifier que les attributs internes (dateDemande, dateService,
           rapport) correspondent aux valeurs fournies.
         """
-        pass
+        livraison = Livraison(self.today, self.today, self.rapport_initial)
+
+        self.assertEqual(livraison.dateDemande, self.today)
+        self.assertEqual(livraison.dateService, self.today)
+        self.assertEqual(livraison.rapport, self.rapport_initial)
+        self.assertIsInstance(livraison, Livraison)
 
     def test_effectuer_livraison_met_a_jour_rapport(self):
         """
@@ -37,7 +51,12 @@ class TestLivraison(unittest.TestCase):
         - Vérifier qu'un rapport de livraison détaillé est enregistré
           (contenu non vide, décrivant par exemple la réussite de la livraison).
         """
-        pass
+        self.livraison.effectuerLivraison()
+
+        self.assertIsInstance(self.livraison.rapport, str)
+        self.assertNotEqual(self.livraison.rapport, self.rapport_initial)
+        self.assertIn("livraison", self.livraison.rapport.lower())
+
 
     def test_effectuer_livraison_met_a_jour_date_service_si_non_fixee(self):
         """
@@ -50,7 +69,11 @@ class TestLivraison(unittest.TestCase):
         - Vérifier que dateService est mise à la date du jour ou à une
           date cohérente avec l'exécution de la livraison.
         """
-        pass
+        self.assertIsNone(self.livraison.dateService)
+
+        self.livraison.effectuerLivraison()
+
+        self.assertEqual(self.livraison.dateService, self.today)
 
     def test_effectuer_livraison_plusieurs_fois(self):
         """
@@ -63,21 +86,15 @@ class TestLivraison(unittest.TestCase):
         - soit la méthode signale que la livraison a déjà été effectuée
           (via une exception ou un message).
         """
-        pass
+        self.livraison.effectuerLivraison()
+        rapport_apres_premiere = self.livraison.rapport
+        date_apres_premiere = self.livraison.dateService
 
-    def test_effectuer_livraison_sans_adresse_valide(self):
-        """
-        Vérifie que effectuerLivraison() gère le cas d'une livraison sans
-        adresse valide.
+        with self.assertRaises(ValueError):
+            self.livraison.effectuerLivraison()
 
-        Scénario possible :
-        - Créer une Livraison sans adresse ou avec une adresse invalide.
-        - Appeler effectuerLivraison().
-        - Vérifier que ce cas est refusé ou signalé (exception, message
-          d'erreur, etc.), conformément aux règles qui seront définies.
-        """
-        pass
-
+        self.assertEqual(self.livraison.rapport, rapport_apres_premiere)
+        self.assertEqual(self.livraison.dateService, date_apres_premiere)
 
 if __name__ == "__main__":
     unittest.main()
