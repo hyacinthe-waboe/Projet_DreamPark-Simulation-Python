@@ -1,24 +1,77 @@
-# projet-parking-miashs
+# Projet Parking MIASHS
 
-## Partie 0 – Squelette & spécifications
+Ce dépôt contient le projet de développement d'un système de gestion de parking (DreamPark) réalisé dans le cadre de la licence MIASHS. Le projet est structuré en plusieurs livraisons successives correspondant à différentes branches git.
 
-Cette branche correspond à la mise en place du projet sans implémentation métier.
+---
 
-### Contenu de la partie 0
+## Partie 0 – Squelette & Spécifications
 
-- **Architecture du projet** :
-  - `src/` : toutes les classes du diagramme UML (squelettes uniquement, méthodes avec `pass`).
-  - `tests/` : fichiers de tests unitaires, sous forme de **spécifications** (méthodes `test_...` décrites mais non implémentées).
-  - `doc/` :
-    - `style.css` : feuille de style pour la documentation HTML.
-    - `index.html` : page d’entrée de la documentation (générée automatiquement).
-    - `pydoc/` : contiendra la documentation HTML générée (non versionnée dans le dépôt).
-  - `gen_doc.py` : script de génération automatique de la documentation.
+Cette branche correspond à la mise en place de l'architecture du projet et à la définition des spécifications, sans implémentation métier.
 
-### Générer la documentation (pydoc)
+### Contenu de l'architecture
 
-La documentation n’est **pas** stockée dans le dépôt : le dossier `doc/pydoc/` est ignoré par `.gitignore`.  
-Pour (re)générer la documentation, se placer à la racine du projet et exécuter :
+* **`src/`** : Contient tous les squelettes des classes du diagramme UML (méthodes définies avec `pass`).
+* **`tests/`** : Contient les fichiers de tests unitaires sous forme de spécifications (méthodes `test_...` décrites par des docstrings mais non implémentées).
+* **`doc/`** :
+    * `style.css` : Feuille de style pour la documentation HTML.
+    * `index.html` : Page d’entrée de la documentation.
+    * `pydoc/` : Dossier de destination pour la documentation générée (ignoré par git).
+* **`gen_doc.py`** : Script utilitaire pour la génération automatique de la documentation.
+
+### Générer la documentation
+
+La documentation technique n’est pas versionnée. Pour la générer localement :
 
 ```bash
 python gen_doc.py
+
+## Partie 1 – Implémentation du cas d'utilisation : Se Garer
+
+Cette branche (`Partie1`) correspond à l'implémentation fonctionnelle du cas d'utilisation **"Se Garer"** et à la validation des tests unitaires associés.
+
+### Objectifs
+L'objectif principal était de rendre fonctionnel le circuit d'entrée d'un véhicule dans le parking, en respectant les contraintes de dimensions, de disponibilité et de gestion des droits (Abonnés vs Super Abonnés).
+
+### Implémentation fonctionnelle (`src/`)
+
+Le développement respecte les principes de la **Programmation Orientée Objet (POO)** et le patron **Modèle-Vue-Contrôleur (MVC)**. La convention de nommage *camelCase* est appliquée.
+
+#### 1. Modèle de Données (Noyau)
+Ces classes gèrent l'état du système et l'intégrité des données :
+
+* **`parking.py`** : Génération automatique des places et méthode `rechercherPlace` (filtre par disponibilité et dimensions).
+* **`place.py`** : Gestion de l'état d'occupation (`estLibre` avec setter) et méthode `addPlacement`.
+* **`voiture.py`** : Association au parking via `addPlacementV` et programmation défensive (refus de dimensions invalides).
+* **`placement.py`** : Gestion de la période d'occupation (`partirPlace`) et validation chronologique.
+* **`contrat.py`** / **`abonnement.py`** : Gestion de la logique contractuelle et de l'état des abonnements.
+
+#### 2. Contrôleurs et Orchestration
+Ces classes gèrent la logique métier et les flux d'actions :
+
+* **`acces.py`** : Contrôleur principal (`lancerProcedureEntree`). Gère les décisions (Super Abonné, ticket, parking complet).
+* **`teleporteur.py`** : Composant transactionnel (`teleporterVoiture`). Assure la cohérence atomique entre la création du placement et la mise à jour des états (Voiture/Place).
+* **`client.py`** : Point d'entrée utilisateur (`entrerParking`) déléguant l'action à l'accès.
+
+#### 3. Outils et Matériel Simulé
+Ces classes simulent les interactions physiques :
+
+* **`camera.py`** : Simulation des capteurs (lecture immatriculation/dimensions) avec gestion d'erreurs.
+* **`panneau_affichage.py`** : Affichage sécurisé des disponibilités (gestion du statut "COMPLET").
+* **`borne_ticket.py`** : Interaction client (délivrance ticket, proposition d'abonnements).
+
+### Tests Unitaires (`tests/`)
+
+L'ensemble des tests définis en Partie 0 a été implémenté suivant une approche **TDD** (Test-Driven Development).
+
+* **Stratégie** : Utilisation de **vrais objets** (pas de mocks excessifs) dans le `setUp` pour valider les interactions réelles (Tests d'intégration).
+* **Couverture** :
+    1.  **Tests d'Intégration** : Scénario complet `Client.entrerParking`.
+    2.  **Tests de Composants** : Logique de recherche du `Parking` et transaction du `Teleporteur`.
+    3.  **Tests Modèles** : Validation des états et contraintes de `Voiture`, `Place`, etc.
+
+### Lancement des tests
+
+Pour vérifier le bon fonctionnement de la Partie 1, exécuter la suite de tests à la racine du projet :
+
+```bash
+python -m unittest discover tests
