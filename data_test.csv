@@ -1,6 +1,0 @@
-type,immat,date,type_service,est_abonne,est_super_abonne
-entree,AB-123-CD,2025-12-19T15:36:05.928484,,True,False
-service,AB-123-CD,2025-12-19T16:36:05.928484,entretien,True,False
-sortie,AB-123-CD,2025-12-19T18:36:05.928484,,True,False
-entree,EF-456-GH,2025-12-19T17:36:05.928484,,False,False
-service,EF-456-GH,2025-12-19T19:36:05.928484,livraison,False,False
