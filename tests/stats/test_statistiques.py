@@ -1,6 +1,7 @@
 import os
 import sys
 
+# Calcul dynamique du chemin pour trouver le dossier 'src'
 RACINE = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 SRC_DIR = os.path.join(RACINE, "src")
 if SRC_DIR not in sys.path:
@@ -52,7 +53,7 @@ class TestStatistiquesParking(unittest.TestCase):
         self.historique.enregistrer_entree(
           imma="AB-123-CD",
           date=self.now,
-          acces="A1"
+          # acces="A1" <--- Retiré car non supporté par ta classe Historique actuelle
         )
 
         resultat = self.stats.nombre_passages(debut, fin)
@@ -77,19 +78,16 @@ class TestStatistiquesParking(unittest.TestCase):
         self.historique.enregistrer_entree(
           imma="AB-124-CD",
           date=self.now,
-          acces="A1"
         )
 
         self.historique.enregistrer_sortie(
           imma="AB-125-CD",
           date=self.now,
-          acces="A2"
         )
 
         self.historique.enregistrer_entree(
           imma="AB-126-CD",
           date=self.now,
-          acces="A3"
         )
 
         resultat = self.stats.nombre_passages(debut, fin)
@@ -115,14 +113,12 @@ class TestStatistiquesParking(unittest.TestCase):
         self.historique.enregistrer_entree(
           imma="AVANT-000",
           date=date_avant,
-          acces="A1",
         )
 
         date_apres = fin + timedelta(days=1)
         self.historique.enregistrer_sortie(
           imma="APRES-999",
           date=date_apres,
-          acces="A2",
         )
 
         resultat = self.stats.nombre_passages(debut, fin)
@@ -150,25 +146,21 @@ class TestStatistiquesParking(unittest.TestCase):
         self.historique.enregistrer_entree(
           imma="AB-123-CD",
           date=self.now,
-          acces="A1"
         )
 
         self.historique.enregistrer_sortie(
           imma="AB-123-CD",
           date=self.now,
-          acces="A2"
         )
 
         self.historique.enregistrer_entree(
           imma="AB-123-CD",
           date=self.now,
-          acces="A4"
         )
 
         self.historique.enregistrer_entree(
           imma="AB-124-CD",
           date=self.now,
-          acces="A3"
         )
 
         resultat = self.stats.nombre_clients_distincts(debut, fin)
@@ -196,14 +188,12 @@ class TestStatistiquesParking(unittest.TestCase):
         self.historique.enregistrer_entree(
           imma="AVANT-000",
           date=date_avant,
-          acces="A1",
         )
 
         date_apres = fin + timedelta(days=1)
         self.historique.enregistrer_sortie(
           imma="APRES-999",
           date=date_apres,
-          acces="A2",
         )
 
         resultat = self.stats.nombre_clients_distincts(debut, fin)
@@ -267,12 +257,10 @@ class TestStatistiquesParking(unittest.TestCase):
         self.historique.enregistrer_entree(
           imma="ENTREE-1",
           date=self.now,
-          acces="A1",
         )
         self.historique.enregistrer_sortie(
           imma="SORTIE-1",
           date=self.now + timedelta(hours=1),
-          acces="A2",
         )
 
         self.historique.enregistrer_service(

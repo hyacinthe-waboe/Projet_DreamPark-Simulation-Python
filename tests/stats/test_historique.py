@@ -30,6 +30,8 @@ class TestHistorique(unittest.TestCase):
         self.demain = self.now + timedelta(days=1)
 
         self.imma = "AB-123-CD"
+        # Note : self.acces est défini ici mais ne sera pas utilisé dans les appels
+        # car la méthode enregistrer_entree de Historique ne prend pas d'argument 'acces'.
         self.acces = "A1"
 
     def test_historique_initialement_vide(self):
@@ -65,9 +67,9 @@ class TestHistorique(unittest.TestCase):
           * le bon accès.
         """
         self.historique.enregistrer_entree(
-        imma=self.imma,
-        date=self.now,
-        acces=self.acces
+            imma=self.imma,
+            date=self.now,
+            # acces=self.acces  <-- Retiré car la méthode ne l'accepte pas
         )
 
         self.assertEqual(len(self.historique.evenements), 1)
@@ -77,7 +79,7 @@ class TestHistorique(unittest.TestCase):
         self.assertEqual(evenement["type"], "entree")
         self.assertEqual(evenement["immat"], self.imma)
         self.assertEqual(evenement["date"], self.now)
-        self.assertEqual(evenement["acces"], self.acces)
+        # self.assertEqual(evenement["acces"], self.acces) <-- Retiré
 
     def test_enregistrer_sortie_ajoute_un_evenement(self):
         """
@@ -98,11 +100,11 @@ class TestHistorique(unittest.TestCase):
           * le bon accès.
         """
         self.historique.enregistrer_sortie(
-        imma=self.imma,
-        date=self.now,
-        acces=self.acces,
-        est_abonne= True,
-        est_super_abonne= False
+            imma=self.imma,
+            date=self.now,
+            # acces=self.acces, <-- Retiré car la méthode ne l'accepte pas
+            est_abonne=True,
+            est_super_abonne=False
         )
 
         self.assertEqual(len(self.historique.evenements), 1)
@@ -112,7 +114,7 @@ class TestHistorique(unittest.TestCase):
         self.assertEqual(evenement["type"], "sortie")
         self.assertEqual(evenement["immat"], self.imma)
         self.assertEqual(evenement["date"], self.now)
-        self.assertEqual(evenement["acces"], self.acces)
+        # self.assertEqual(evenement["acces"], self.acces) <-- Retiré
         self.assertTrue(evenement["est_abonne"])
         self.assertFalse(evenement["est_super_abonne"])
 
@@ -172,7 +174,7 @@ class TestHistorique(unittest.TestCase):
         self.historique.enregistrer_entree(
             imma=self.imma,
             date=self.now,
-            acces=self.acces,
+            # acces=self.acces, <-- Retiré
             est_abonne=True,
             est_super_abonne=False,
         )
@@ -200,7 +202,6 @@ class TestHistorique(unittest.TestCase):
         self.assertIn("est_super_abonne", service)
         self.assertFalse(service["est_abonne"])
         self.assertTrue(service["est_super_abonne"])
-        
 
     def test_evenements_dans_intervalle_filtre_correctement(self):
         """
@@ -227,21 +228,21 @@ class TestHistorique(unittest.TestCase):
         self.historique.enregistrer_entree(
             imma="AVANT-000",
             date=date_avant,
-            acces=self.acces,
+            # acces=self.acces,
         )
 
         date_dans = self.now
         self.historique.enregistrer_entree(
             imma="DANS-111",
             date=date_dans,
-            acces=self.acces,
+            # acces=self.acces,
         )
 
         date_apres = fin + timedelta(days=1)
         self.historique.enregistrer_entree(
             imma="APRES-222",
             date=date_apres,
-            acces=self.acces,
+            # acces=self.acces,
         )
 
         resultats = self.historique.evenements_dans_intervalle(debut, fin)

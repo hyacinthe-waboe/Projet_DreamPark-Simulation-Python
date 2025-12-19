@@ -7,7 +7,6 @@ méthodes d'étude statistique de l'activité du parking DreamPark.
 
 from datetime import datetime
 from typing import Any, Dict
-# from .historique import Historique
 
 class StatistiquesParking:
     """
@@ -91,8 +90,9 @@ class StatistiquesParking:
         immatriculations = set()
 
         for evt in evenements:
-            if evt["type"] in ("entree", "sortie"):
-                immatriculations.add(evt["immat"])
+            immat = evt.get("immat")
+            if immat:
+                immatriculations.add(immat)
 
         return len(immatriculations)
 
