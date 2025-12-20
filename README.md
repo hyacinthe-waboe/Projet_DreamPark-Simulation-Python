@@ -1,4 +1,4 @@
-# 🚗 MJEKU_SAÏD - PARKING MIASHS 🅿️
+# 🚗 MJEKU_WABOE - PARKING MIASHS 🅿️
 
 Simulation d’un **parking intelligent** développée en **Python pur** (bibliothèque standard uniquement) dans le cadre de la **Licence MIASHS (UT2J)**.
 
