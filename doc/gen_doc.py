@@ -2,8 +2,13 @@ import os
 import sys
 import pydoc
 
-RACINE = os.path.dirname(os.path.abspath(__file__))
+# Dossier où se trouve ce script (doc/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+# Racine du projet (parent de doc/)
+RACINE = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
+
+# Pour importer tests.* (depuis la racine) et les modules src/*
 if RACINE not in sys.path:
     sys.path.insert(0, RACINE)
 

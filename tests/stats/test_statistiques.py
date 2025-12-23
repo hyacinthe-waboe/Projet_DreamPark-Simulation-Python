@@ -11,7 +11,8 @@ import unittest
 from datetime import datetime, timedelta
 
 from stats.historique import Historique
-from stats.statistiques import StatistiquesParking
+from stats.statistiques import Statistiques 
+from noyau.parking import Parking 
 
 
 class TestStatistiquesParking(unittest.TestCase):
@@ -28,8 +29,9 @@ class TestStatistiquesParking(unittest.TestCase):
         - Définir quelques dates de référence (date courante, date
           passée, date future) qui serviront dans les différents tests.
         """
-        self.historique = Historique()
-        self.stats = StatistiquesParking(self.historique)
+        self.historique = Historique()       
+        self.parking = Parking(10, 30, 15, 3, self.historique) 
+        self.stats = Statistiques(self.historique,self.parking) 
 
         self.now = datetime.now()
         self.hier = self.now - timedelta(days=1)
@@ -53,7 +55,6 @@ class TestStatistiquesParking(unittest.TestCase):
         self.historique.enregistrer_entree(
           imma="AB-123-CD",
           date=self.now,
-          # acces="A1" <--- Retiré car non supporté par ta classe Historique actuelle
         )
 
         resultat = self.stats.nombre_passages(debut, fin)

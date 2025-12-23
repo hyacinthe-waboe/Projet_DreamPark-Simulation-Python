@@ -7,8 +7,10 @@ méthodes d'étude statistique de l'activité du parking DreamPark.
 
 from datetime import datetime
 from typing import Any, Dict
+from noyau.parking import Parking 
+from stats.historique import Historique
 
-class StatistiquesParking:
+class Statistiques:
     """
     Statistiques sur l'activité du parking.
 
@@ -23,7 +25,7 @@ class StatistiquesParking:
         ou d'un accès à une base de données.
     """
 
-    def __init__(self, historique: Any) -> None:
+    def __init__(self, historique: Historique, parking: Parking ) -> None:
         """
         Initialise le module de statistiques pour un historique donné.
 
@@ -35,6 +37,7 @@ class StatistiquesParking:
             statistiques.
         """
         self.historique = historique
+        self.parking = parking
 
     def nombre_passages(self, debut: datetime, fin: datetime) -> int:
         """
@@ -157,3 +160,87 @@ class StatistiquesParking:
                     repartition[type_service] = repartition.get(type_service, 0) + 1
 
         return repartition
+    
+    def recettes_du_jour(self) -> float:
+        """
+        Calcule le chiffre d'affaires généré sur la journée en cours.
+
+        Cette méthode parcourt les événements de l'historique et additionne
+        les recettes associées aux sorties effectuées aujourd'hui. Le tarif
+        appliqué dépend du statut « super abonné » enregistré dans l'événement
+        de sortie.
+
+        Returns
+        -------
+        float
+            Montant total des recettes du jour.
+        """
+        aujourdhui_str = datetime.now().strftime("%Y-%m-%d")
+        total_recette = 0.0
+        
+        for evt in self.historique.evenements:
+            if evt["type"] == "sortie":
+                date_evt_str = str(evt["date"])
+                
+                if date_evt_str.startswith(aujourdhui_str):
+                    # On gère le cas où c'est un booléen ou une string "True"/"False" (CSV)
+                    val_vip = evt.get("est_super_abonne", False)
+                    est_vip = str(val_vip).lower() == "true" or val_vip is True
+                    
+                    if est_vip:
+                        total_recette += getattr(self.parking, "prix_vip", 50.0)
+                    else:
+                        total_recette += getattr(self.parking, "prix", 15.0)
+                    
+        return total_recette
+
+
+    def _verifier_si_vip(self, immat: str) -> bool:
+        """
+        Vérifie si une voiture était super abonnée lors de son entrée.
+
+        Cette méthode recherche dans l'historique l'événement d'entrée le plus
+        récent correspondant à l'immatriculation fournie, puis renvoie le statut
+        « super abonné » associé à cet événement.
+
+        Parametres
+        ----------
+        immat : str
+            Immatriculation de la voiture à vérifier.
+
+        Returns
+        -------
+        bool
+            True si la voiture était super abonnée lors de son entrée,
+            False sinon.
+        """
+        for evt in reversed(self.historique.evenements):
+            if evt["type"] == "entree" and evt.get("immat") == immat:
+                val = evt.get("est_super_abonne", False)
+                return str(val).lower() == "true" or val is True
+        return False
+
+
+    def total_entrees_jour(self) -> int:
+        """
+        Calcule le nombre total d'entrées sur la journée en cours.
+
+        Cette méthode définit l'intervalle correspondant à la journée courante
+        (de 00:00:00 à 23:59:59), récupère les événements de l'historique sur
+        cet intervalle, puis compte uniquement ceux de type « entree ».
+
+        Returns
+        -------
+        int
+            Nombre d'événements de type « entree » sur la journée en cours.
+        """
+        now = datetime.now()
+        debut = datetime(now.year, now.month, now.day, 0, 0, 0)
+        fin = datetime(now.year, now.month, now.day, 23, 59, 59)
+        
+        try:
+            evts = self.historique.evenements_dans_intervalle(debut, fin)
+            return sum(1 for e in evts if e["type"] == "entree")
+        except Exception:
+            return 0
+

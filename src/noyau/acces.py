@@ -122,6 +122,99 @@ class Acces:
                 est_abonne=c.estAbonne,
                 est_super_abonne=c.estSuperAbonne,
             )
-            return f"Bienvenue. Ticket {ticket}. Voiture garée en place {placeTrouvee.idPlace}."
+            if c.estSuperAbonne: 
+                return f"Bienvenue VIP: Ticket {ticket}. Place {placeTrouvee.idPlace}."
+            else:
+                return f"Bienvenue : Ticket {ticket}. Place {placeTrouvee.idPlace}. Voiture garée."
+        
+    def forcerStationnement(self, client, id_place):
+        """
+        Force le stationnement d'une voiture sur une place précise.
+
+        Cette méthode est prévue pour une interface (ex. clic sur une carte)
+        permettant de choisir directement une place. Elle recherche la place
+        par son identifiant, délivre un ticket, téléporte la voiture vers la
+        place choisie, puis enregistre l'entrée dans l'historique en cas de succès.
+
+        Parametres
+        ----------
+        client : Client
+            Client qui souhaite entrer dans le parking.
+        id_place : str
+            Identifiant de la place ciblée (ex. "A1").
+
+        Returns
+        -------
+        str
+            Message indiquant le résultat (succès, refus, ou place indisponible).
+        """
+        # On cherche la place correspondant à l'ID (ex: "A1")
+        place_cible = next((p for p in self.parking.places if p.idPlace == id_place), None)
+        
+        if place_cible and place_cible.estLibre:
+            # On reprend la logique standard d'entrée
+            ticket = self.borne.deliverTicket(client)
+            
+            # On utilise le téléporteur vers cette place spécifique
+            succes = self.teleporteur.teleporterVoiture(client.voiture, place_cible)
+            
+            if succes:
+                self.parking.historique.enregistrer_entree(
+                    imma=client.voiture.immatriculation,
+                    date=datetime.now(),
+                    est_abonne=client.estAbonne,
+                    est_super_abonne=client.estSuperAbonne
+                )
+                
+                return f"Bienvenue. Ticket {ticket}. Place {place_cible.idPlace}."
+            else:
+                 return f"REFUS : Le véhicule est trop grand pour la place {id_place}."
         else:
-            return "Erreur technique lors de la téléportation."
+            return "Place indisponible ou inexistante."
+
+
+    def reprendreVoiture(self, client, ticket: str) -> str:
+        """
+        Lance la procédure de sortie et récupère la voiture du client.
+
+        Cette méthode demande au téléporteur de ramener la voiture du client
+        depuis les places du parking. En cas de succès, elle calcule le montant
+        à payer (tarif normal ou VIP), enregistre la sortie dans l'historique,
+        puis renvoie un message de fin de session.
+
+        Parametres
+        ----------
+        client : Client
+            Client qui souhaite récupérer sa voiture.
+        ticket : str
+            Identifiant du ticket associé au stationnement.
+
+        Returns
+        -------
+        str
+            Message indiquant le résultat (paiement et sortie, ou erreur).
+        """
+        if not client.voiture:
+            return "Erreur: Ce client n'a pas de voiture."
+
+        succes = self.teleporteur.recupererVoiture(client.voiture, self.parking.places)
+        
+        if succes:
+            if client.estSuperAbonne:
+                montant = self.parking.prix_vip
+                msg_client = f"A BIENTÔT ! Ticket {ticket} payé ({montant}€)"
+            else:
+                montant = self.parking.prix
+                msg_client = f"Au revoir ! Ticket {ticket} payé ({montant}€)."
+
+            if self.parking.historique:
+                self.parking.historique.enregistrer_sortie(
+                    imma=client.voiture.immatriculation,
+                    date=datetime.now(),
+                    est_abonne=client.estAbonne,
+                    est_super_abonne=client.estSuperAbonne 
+                )
+            
+            return msg_client
+        else:
+            return "Erreur: Voiture introuvable ou déjà sortie."

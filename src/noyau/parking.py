@@ -58,10 +58,13 @@ class Parking:
         self._nbPlacesLibres = nbPlacesLibres 
         self._prix = prix
         self.nbNiveaux = nbNiveaux
+
+        self.prix = prix 
+        self.prix_vip = 50
         
         self.places = [] 
         self.abonnements = [] 
-        self._historique = historique if historique is not None else Historique()
+        self.historique = historique if historique is not None else Historique()
 
         #Initialisation automatique des places, n génère les niveaux A, B, C...
         for i in range(nbNiveaux):
@@ -131,10 +134,3 @@ class Parking:
         """
         self.abonnements.append(ab)
 
-    @property
-    def prix(self):
-        return self._prix
-    
-    @property
-    def historique(self) -> Historique:
-        return self._historique

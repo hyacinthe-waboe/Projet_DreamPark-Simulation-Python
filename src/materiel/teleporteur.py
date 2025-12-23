@@ -48,6 +48,8 @@ class Teleporteur:
         v.estDansParking = True   
         p.estLibre = False
 
+        p.voiture = v 
+
         p.addPlacementP(nouveauPlacement)   
         v.addPlacementV(nouveauPlacement)
 
@@ -76,3 +78,46 @@ class Teleporteur:
         
         v.estDansParking = True
         return "Téléportation Super Abonné effectuée avec succès vers la zone VIP."
+
+    def recupererVoiture(self, voiture, liste_places) -> bool:
+        """
+        Récupère une voiture garée dans le parking et libère sa place.
+
+        Cette méthode recherche la voiture dans la liste des places du parking.
+        Si elle est trouvée, la place correspondante est libérée (la place
+        redevient disponible et n'est plus associée à une voiture) et le statut
+        de la voiture est mis à jour pour indiquer qu'elle n'est plus dans le parking.
+
+        Parametres
+        ----------
+        voiture : Voiture
+            Voiture à récupérer.
+        liste_places : list[Place]
+            Liste des places de stationnement à parcourir.
+
+        Returns
+        -------
+        bool
+            True si la voiture a été trouvée et récupérée avec succès,
+            False si la voiture n'est pas dans le parking ou est introuvable.
+        """
+        if not voiture.estDansParking:
+            return False
+
+        # On parcourt les places pour trouver où est garée cette voiture
+        place_trouvee = None
+        for p in liste_places:
+            if not p.estLibre and hasattr(p, 'voiture') and p.voiture == voiture:
+                place_trouvee = p
+                break
+        
+        if place_trouvee:
+            # On libère la place
+            place_trouvee.estLibre = True
+            place_trouvee.voiture = None 
+            
+            # On met à jour le statut de la voiture
+            voiture.estDansParking = False
+            return True
+        
+        return False
