@@ -2,22 +2,25 @@ import os
 import sys
 import pydoc
 
-# Dossier où se trouve ce script (doc/)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# Racine du projet (parent de doc/)
-RACINE = os.path.abspath(os.path.join(SCRIPT_DIR, ".."))
+racine = SCRIPT_DIR
+while True:
+    if os.path.isdir(os.path.join(racine, "src")) and os.path.isdir(os.path.join(racine, "tests")):
+        break
+    parent = os.path.dirname(racine)
+    if parent == racine:
+        break
+    racine = parent
 
-# Pour importer tests.* (depuis la racine) et les modules src/*
-if RACINE not in sys.path:
-    sys.path.insert(0, RACINE)
+if racine not in sys.path:
+    sys.path.insert(0, racine)
 
-SRC_DIR = os.path.join(RACINE, "src")
+SRC_DIR = os.path.join(racine, "src")
 if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
-# Dossiers de sortie
-DOC_DIR = os.path.join(RACINE, "doc")
+DOC_DIR = os.path.join(racine, "doc")
 os.makedirs(DOC_DIR, exist_ok=True)
 
 PYDOC_DIR = os.path.join(DOC_DIR, "pydoc")
@@ -73,12 +76,7 @@ MODULES_TESTS_STAT = [
     "tests.stats.test_historique",
 ]
 
-ALL_MODULES = (
-    MODULES_CLASSES
-    + MODULES_TESTS
-    + MODULES_CLASSES_STAT
-    + MODULES_TESTS_STAT
-)
+ALL_MODULES = MODULES_CLASSES + MODULES_TESTS + MODULES_CLASSES_STAT + MODULES_TESTS_STAT
 
 os.chdir(PYDOC_DIR)
 
@@ -91,7 +89,6 @@ for module_name in ALL_MODULES:
 
 for module_name in ALL_MODULES:
     html_path = os.path.join(PYDOC_DIR, f"{module_name}.html")
-    
     if not os.path.exists(html_path):
         continue
 

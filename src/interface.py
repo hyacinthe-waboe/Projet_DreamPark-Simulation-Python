@@ -6,7 +6,7 @@ import os
 
 from noyau.parking import Parking
 from noyau.acces import Acces
-from noyau.placement import Placement
+from noyau.placement import Placement 
 
 from materiel.camera import Camera
 from materiel.panneau_affichage import PanneauAffichage
@@ -20,7 +20,7 @@ from services.entretien import Entretien
 
 from stats.historique import Historique
 from stats.statistiques import Statistiques
-from stats.database import DatabaseManager 
+from stats.database import DatabaseManager
 
 ctk.set_appearance_mode("Dark")
 ctk.set_default_color_theme("dark-blue")
@@ -36,16 +36,19 @@ COLORS = {
     "text_main": "#f8fafc", 
     "text_muted": "#94a3b8",
     "vip": "#d946ef", 
-    "maintenance": "#f59e0b", 
+    "maintenance": "#f59e0b",
     "panel_bg": "#1e293b"
 }
 
+# --- CLASSE UTILITAIRE POUR STOPPER LES DOUBLONS ---
+class GhostHistorique:
+    """Un historique 'Fantôme' qui ne fait rien. On le donne au Parking pour le faire taire."""
+    def enregistrer_entree(self, *args, **kwargs): pass
+    def enregistrer_sortie(self, *args, **kwargs): pass
+    def enregistrer_service(self, *args, **kwargs): pass
+
 class ParkingEnterpriseGUI(ctk.CTk):
     
-    # ==========================================
-    # 1. INITIALISATION & CONFIGURATION
-    # ==========================================
-
     def __init__(self):
         super().__init__()
         self.title("DREAMPARK")
@@ -64,7 +67,7 @@ class ParkingEnterpriseGUI(ctk.CTk):
         os.makedirs(dossier_data, exist_ok=True)
         chemin_csv = os.path.join(dossier_data, "parking_log.csv")
         
-        # Initialisation Base de données & Logique Métier
+        # Initialisation Base de données
         reset_mode = not os.path.exists(chemin_csv)
         self.db = DatabaseManager()
 
@@ -72,27 +75,31 @@ class ParkingEnterpriseGUI(ctk.CTk):
             self.db.tout_effacer()
             print("RESET TOTAL : Historique supprimé détecté -> Base visuelle vidée.")
 
+        # Création du Parking (Backend)
         self.parking = Parking(10, 20, 15, 3) 
         self.acces = Acces(self.parking, Camera(), PanneauAffichage(), BorneTicket(), Teleporteur())
         
+        # On charge le VRAI historique pour l'interface 
         self.historique = Historique.depuis_csv(chemin_csv)
-        self.parking.historique = self.historique
+        
+        # 2. On donne un FAUX historique au Parking (Backend)
+        # Comme ça, quand le backend dit "J'enregistre une entrée", ça part dans le vide.
+        # Seule l'interface enregistrera la ligne complète dans le CSV.
+        self.parking.historique = GhostHistorique() 
+        
         self.stats_manager = Statistiques(self.historique, self.parking)
 
         self.db_places = {} 
         self.place_widgets_map = {} 
         self.selected_place_id = None
 
-        # Configuration Grille Principale
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
 
-        # Construction Interface
         self.setup_sidebar()      
         self.setup_main_area()    
         self.build_initial_map()  
         
-        # Démarrage
         self.charger_persistance()
         self.log_message("SYSTÈME DÉMARRÉ. PRÊT.")
         if hasattr(self, 'db_places') and self.db_places:
@@ -100,11 +107,9 @@ class ParkingEnterpriseGUI(ctk.CTk):
             
         self.rafraichir_vue() 
         self.update_trend_monitor("STABLE")
-        self.update_clock() # Lancement de l'horloge
+        self.update_clock()
 
-    # ==========================================
     # 2. GESTION PERSISTANCE & BACKEND
-    # ==========================================
 
     def charger_persistance(self):
         data_sql = self.db.charger_etat()
@@ -140,9 +145,7 @@ class ParkingEnterpriseGUI(ctk.CTk):
             else:
                 print(f"Erreur Sync: Place {place_id} introuvable dans le backend.")
 
-    # ==========================================
-    # 3. CONSTRUCTION DE L'INTERFACE (GUI)
-    # ==========================================
+    # 3. GUI SETUP
 
     def setup_sidebar(self):
         screen_h = self.winfo_screenheight()
@@ -155,11 +158,9 @@ class ParkingEnterpriseGUI(ctk.CTk):
         
         self.sidebar.grid(row=0, column=0, sticky="nsew")
 
-        # Logo & Titre
         lbl = ctk.CTkLabel(self.sidebar, text="DREAMPARK\nULTIMATE", font=ctk.CTkFont(family="Impact", size=32), text_color=COLORS["accent"])
         lbl.pack(pady=(30, 20), padx=20)
 
-        # Section Entrées
         self.frame_entry = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         self.frame_entry.pack(fill="x", padx=10)
         ctk.CTkLabel(self.frame_entry, text="GESTION ENTRÉES", font=("Arial", 12, "bold"), text_color=COLORS["text_muted"]).pack(anchor="w", pady=5)
@@ -171,7 +172,6 @@ class ParkingEnterpriseGUI(ctk.CTk):
 
         ctk.CTkFrame(self.sidebar, height=2, fg_color=COLORS["card_bg"]).pack(fill="x", padx=20, pady=20)
 
-        # Section Contexte & Actions
         self.frame_ctx = ctk.CTkFrame(self.sidebar, fg_color="transparent")
         self.frame_ctx.pack(fill="both", expand=not is_small_screen, padx=10, pady=(0, 20))
         
@@ -200,22 +200,18 @@ class ParkingEnterpriseGUI(ctk.CTk):
         self.main_area.grid_columnconfigure(1, weight=3)
         self.main_area.grid_rowconfigure(2, weight=1)
 
-        # En-tête
         h = ctk.CTkFrame(self.main_area, fg_color="transparent")
         h.grid(row=0, column=0, columnspan=2, sticky="ew")
         ctk.CTkLabel(h, text="VUE SUPERVISEUR", font=("Arial", 24, "bold")).pack(side="left")
         
-        # --- HORLOGE DIGITALE ---
         self.lbl_clock = ctk.CTkLabel(h, text="CHARGEMENT...", font=("Consolas", 18, "bold"), text_color=COLORS["accent"])
         self.lbl_clock.pack(side="right")
         
-        # Barre de progression globale
         self.stats_f = ctk.CTkFrame(self.main_area, fg_color=COLORS["bg_sidebar"], corner_radius=10)
         self.stats_f.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(0, 20))
         ctk.CTkLabel(self.stats_f, text="TAUX D'OCCUPATION GLOBAL", font=("Arial", 12, "bold"), text_color=COLORS["text_muted"]).pack(side="top", anchor="w", padx=20, pady=(10, 5))
         self.prog_main = ctk.CTkProgressBar(self.stats_f, height=15, corner_radius=8); self.prog_main.pack(side="top", fill="x", padx=20, pady=(0, 15)); self.prog_main.set(0)
 
-        # Carte Parking (Auto-adaptative)
         screen_h = self.winfo_screenheight()
         is_small_screen = screen_h < 900
         
@@ -227,7 +223,6 @@ class ParkingEnterpriseGUI(ctk.CTk):
 
         self.map_frame.grid(row=2, column=0, sticky="nsew", pady=(0, 10), padx=(0, 10))
         
-        # Console de logs
         self.console = ctk.CTkTextbox(self.main_area, height=80, fg_color=COLORS["bg_sidebar"], text_color=COLORS["success"], font=("Courier New", 12))
         self.console.grid(row=3, column=0, sticky="ew", padx=(0, 10)); self.console.configure(state="disabled")
 
@@ -247,7 +242,6 @@ class ParkingEnterpriseGUI(ctk.CTk):
             self.rp.grid_columnconfigure(0, weight=1)
             for i in range(4): self.rp.grid_rowconfigure(i, weight=1)
 
-        # Cartes Haut (Entrées / Recettes)
         self.c_entrees = self.mk_card(self.rp, "ENTRÉES DU JOUR", 0)
         self.lbl_nb_entrees = ctk.CTkLabel(self.c_entrees, text="0", font=("Arial", 28, "bold"))
         self.lbl_nb_entrees.pack(expand=True)
@@ -256,40 +250,28 @@ class ParkingEnterpriseGUI(ctk.CTk):
         self.lbl_ca = ctk.CTkLabel(self.c_ca, text="0€", font=("Arial", 28, "bold"), text_color=COLORS["success"])
         self.lbl_ca.pack(expand=True)
 
-        # Carte Moniteur Tendance (IA)
         self.c_alert = self.mk_card(self.rp, "TENDANCE DU TRAFIC (IA)", 2)
-        
         f_trend = ctk.CTkFrame(self.c_alert, fg_color="transparent")
         f_trend.pack(expand=True, fill="both", padx=10, pady=5)
-        
         f_center = ctk.CTkFrame(f_trend, fg_color="transparent")
         f_center.pack(expand=True) 
-        
         self.lbl_trend_icon = ctk.CTkLabel(f_center, text="⚓", font=("Arial", 42))
         self.lbl_trend_icon.grid(row=0, column=0, rowspan=2, padx=(0, 15), sticky="e")
-        
         self.lbl_trend_title = ctk.CTkLabel(f_center, text="STABLE", font=("Arial", 18, "bold"), text_color=COLORS["text_muted"])
         self.lbl_trend_title.grid(row=0, column=1, sticky="w")
-        
         self.lbl_trend_pred = ctk.CTkLabel(f_center, text="Aucune variation majeure", font=("Arial", 12), text_color=COLORS["text_muted"])
         self.lbl_trend_pred.grid(row=1, column=1, sticky="wn")
 
-        # Carte Répartition (Jauges)
         self.c_det = ctk.CTkFrame(self.rp, fg_color=COLORS["panel_bg"], corner_radius=12)
         self.c_det.grid(row=3, column=0, sticky="nsew", pady=(0, 0 if not is_small_screen else 15))
-        
         ctk.CTkLabel(self.c_det, text="RÉPARTITION", font=("Arial", 12, "bold"), text_color=COLORS["accent"]).pack(anchor="w", padx=15, pady=(15, 5))
         f = ctk.CTkFrame(self.c_det, fg_color="transparent"); f.pack(fill="both", expand=True, padx=15, pady=5)
-        
         self.lbl_pa = ctk.CTkLabel(f, text="Zone A: 0/0", font=("Arial", 11, "bold")); self.lbl_pa.pack(anchor="w")
         self.bar_a = ctk.CTkProgressBar(f, height=8, progress_color=COLORS["accent"]); self.bar_a.pack(fill="x", pady=(0, 5)); self.bar_a.set(0)
-        
         self.lbl_pb = ctk.CTkLabel(f, text="Zone B: 0/0", font=("Arial", 11, "bold")); self.lbl_pb.pack(anchor="w")
         self.bar_b = ctk.CTkProgressBar(f, height=8, progress_color=COLORS["warning"]); self.bar_b.pack(fill="x", pady=(0, 5)); self.bar_b.set(0)
-        
         self.lbl_pc = ctk.CTkLabel(f, text="Zone C: 0/0", font=("Arial", 11, "bold")); self.lbl_pc.pack(anchor="w")
         self.bar_c = ctk.CTkProgressBar(f, height=8, progress_color=COLORS["success"]); self.bar_c.pack(fill="x", pady=(0, 10)); self.bar_c.set(0)
-        
         ctk.CTkLabel(f, text="CLIENTS VIP", font=("Arial", 11, "bold"), text_color=COLORS["vip"]).pack(anchor="center")
         self.lbl_vip = ctk.CTkLabel(f, text="0", font=("Arial", 20, "bold"), text_color=COLORS["vip"]); self.lbl_vip.pack(pady=2)
 
@@ -302,20 +284,15 @@ class ParkingEnterpriseGUI(ctk.CTk):
     def build_initial_map(self):
         for w in self.map_frame.winfo_children(): w.destroy()
         self.place_widgets_map.clear()
-        
         screen_h = self.winfo_screenheight()
         is_small_screen = screen_h < 900
         start_row = 0
-        
         if not is_small_screen:
             ctk.CTkLabel(self.map_frame, text="ZONE DE STATIONNEMENT", font=("Arial", 12, "bold"), text_color=COLORS["text_muted"]).grid(row=0, column=0, columnspan=5, sticky="w", pady=(5,10), padx=5)
             start_row = 1 
-
         for i in range(5): self.map_frame.grid_columnconfigure(i, weight=1)
-        
         niveaux = sorted(list(set(p.niveau for p in self.parking.places)))
         curr_row = start_row
-        
         for niv in niveaux:
             ctk.CTkLabel(self.map_frame, text=f"ZONE {niv}", font=("Arial Black", 16), text_color=COLORS["accent"]).grid(row=curr_row, column=0, columnspan=5, sticky="w", pady=10, padx=10)
             curr_row += 1
@@ -323,20 +300,15 @@ class ParkingEnterpriseGUI(ctk.CTk):
             places.sort(key=lambda x: x.numero)
             for idx, p in enumerate(places):
                 r = curr_row + (idx // 5); c = idx % 5
-                
                 btn = ctk.CTkButton(self.map_frame, text=f"{p.idPlace}\n...", height=70, font=("Arial", 14, "bold"), border_width=2, command=lambda o=p: self.on_click(o))
                 btn.grid(row=r, column=c, padx=5, pady=5, sticky="nsew")
-                
                 self.place_widgets_map[p.idPlace] = btn
             curr_row += (len(places)//5) + 2
-
         if not is_small_screen:
             for r in range(curr_row):
                 self.map_frame.grid_rowconfigure(r, weight=1)
 
-    # ==========================================
-    # 4. LOGIQUE & MISE A JOUR (CORE)
-    # ==========================================
+    # 4. LOGIC
 
     def rafraichir_vue(self):
         entrees = self.stats_manager.total_entrees_jour()
@@ -478,12 +450,9 @@ class ParkingEnterpriseGUI(ctk.CTk):
         # Format : JJ/MM/AAAA - HH:MM:SS
         now = datetime.datetime.now().strftime("%d/%m/%Y  •  %H:%M:%S")
         self.lbl_clock.configure(text=now)
-        # On rappelle cette fonction dans 1000ms (1 seconde)
         self.after(1000, self.update_clock)
 
-    # ==========================================
     # 5. ACTIONS UTILISATEUR & SIMULATION
-    # ==========================================
 
     def simuler_entree(self):
         n = random.randint(100,999)
@@ -566,6 +535,17 @@ class ParkingEnterpriseGUI(ctk.CTk):
                 
                 self.log_message(msg_log)
                 
+                # ENREGISTREMENT COMPLET DANS LE CSV
+                self.historique.enregistrer_entree(
+                    imma=immat,
+                    date=datetime.datetime.now(),
+                    est_abonne=vip, 
+                    est_super_abonne=vip, 
+                    nom_client=nom,
+                    ticket_id=partie_ticket,
+                    place_id=partie_place
+                )
+                
             except Exception as e: 
                 self.log_message(f"ENTRÉE OK (Erreur affichage): {res}")
         else:
@@ -582,8 +562,19 @@ class ParkingEnterpriseGUI(ctk.CTk):
         
         if "revoir" in res or "payé" in res or "BIENTÔT" in res:
             self.db.liberer_place(self.selected_place_id)
-            del self.db_places[self.selected_place_id]
             
+           # ENREGISTREMENT COMPLET SORTIE
+            self.historique.enregistrer_sortie(
+                imma=d["voiture"].immatriculation,
+                date=datetime.datetime.now(),
+                est_abonne=d["client"].estAbonne, 
+                est_super_abonne=d["client"].estSuperAbonne,
+                ticket_id=d["ticket"],
+                place_id=self.selected_place_id,
+                nom_client=d["client"].nom
+            )
+
+            del self.db_places[self.selected_place_id]
             self.update_trend_monitor("SORTIE") 
 
             if d["client"].estSuperAbonne :
@@ -610,6 +601,18 @@ class ParkingEnterpriseGUI(ctk.CTk):
                 m.effectuerMaintenance(d["voiture"], self.parking, d["client"])
                 d["statut"] = "MAINTENANCE"
                 self.log_message(f"DÉBUT MAINTENANCE: {d['voiture'].immatriculation}")
+                
+                # ENREGISTREMENT MANUEL (Car Parking Muet)
+                self.historique.enregistrer_service(
+                    imma=d["voiture"].immatriculation,
+                    date=datetime.datetime.now(),
+                    type_service="maintenance",
+                    est_abonne=d["client"].estAbonne,
+                    est_super_abonne=d["client"].estSuperAbonne,
+                    nom_client=d["client"].nom,
+                    place_id=self.selected_place_id
+                )
+                
             except Exception as e: 
                 self.log_message(f"Erreur Maintenance: {e}")
         
@@ -648,7 +651,28 @@ class ParkingEnterpriseGUI(ctk.CTk):
             l = Livraison(datetime.date.today(), datetime.date.today(), f"Livraison vers : {adresse}")
             l.effectuerLivraison(self.parking, d["voiture"], client)
             
+            # ENREGISTREMENT MANUEL (Car Parking Muet)
+            self.historique.enregistrer_service(
+                imma=d["voiture"].immatriculation,
+                date=datetime.datetime.now(),
+                type_service="livraison",
+                est_abonne=d["client"].estAbonne,
+                est_super_abonne=d["client"].estSuperAbonne,
+                nom_client=d["client"].nom,
+                place_id=self.selected_place_id
+            )
+            
             self.acces.reprendreVoiture(client, ticket_id)
+            
+            # SORTIE AUTOMATIQUE AUSSI
+            self.historique.enregistrer_sortie(
+                imma=d["voiture"].immatriculation,
+                date=datetime.datetime.now(),
+                est_abonne=d["client"].estAbonne, 
+                est_super_abonne=d["client"].estSuperAbonne,
+                ticket_id=d["ticket"],
+                place_id=self.selected_place_id
+            )
             
             self.db.liberer_place(self.selected_place_id)
             del self.db_places[self.selected_place_id]
@@ -684,12 +708,21 @@ class ParkingEnterpriseGUI(ctk.CTk):
                 if hasattr(e, 'effectuerEntretien'):
                     e.effectuerEntretien(self.parking, d["voiture"], d["client"])
                 else:
-                    self.parking.historique.enregistrer_service(
-                        d["voiture"].immatriculation, datetime.datetime.now(), "entretien"
-                    )
+                   pass
 
                 d["statut"] = "ENTRETIEN"
                 self.log_message(f"DÉBUT ENTRETIEN: Lavage en cours pour {d['voiture'].immatriculation}...")
+                
+                # ENREGISTREMENT MANUEL
+                self.historique.enregistrer_service(
+                    imma=d["voiture"].immatriculation,
+                    date=datetime.datetime.now(),
+                    type_service="entretien",
+                    est_abonne=d["client"].estAbonne,
+                    est_super_abonne=d["client"].estSuperAbonne,
+                    nom_client=d["client"].nom,
+                    place_id=self.selected_place_id
+                )
                 
             except Exception as err: 
                 self.log_message(f"Erreur Entretien: {err}")

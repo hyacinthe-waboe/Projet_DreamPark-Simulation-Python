@@ -10,6 +10,7 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 import csv
+import os
 
 class Historique:
     """
@@ -36,13 +37,18 @@ class Historique:
     Des clés supplémentaires peuvent être ajoutées pour enrichir
     l'analyse, par exemple :
 
-        Identifiant ou description de l'accès utilisé.
     - "type_service" : str
         Type de service ("entretien", "maintenance", "livraison", ...).
     - "est_abonne" : bool
         Indique si le client est abonné au moment de l'événement.
     - "est_super_abonne" : bool
         Indique si le client est super abonné au moment de l'événement.
+    - "nom_client" : str
+        Nom du client associé à l'événement (si disponible).
+    - "ticket_id" : str
+        Identifiant unique du ticket de la transaction.
+    - "place_id" : str
+        Identifiant de la place de parking concernée (ex: "A1").
 
     Attribues
     ----------
@@ -58,12 +64,19 @@ class Historique:
         A la création, aucun événement n'est enregistré.
         """
         self.evenements: List[Dict[str, Any]] = []
-        self.fichier_csv = fichier_csv
+        
+        if fichier_csv:
+            self.fichier_csv = fichier_csv
+        else:
+            # Gestion automatique du chemin vers data/parking_log.csv
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            data_dir = os.path.join(base_dir, "data")
+            os.makedirs(data_dir, exist_ok=True) # Créer le dossier data si besoin
+            self.fichier_csv = os.path.join(data_dir, "parking_log.csv")
 
-        if self.fichier_csv is not None:
-            Path(self.fichier_csv).parent.mkdir(parents=True, exist_ok=True)
-
-    def enregistrer_entree(self,imma: str,date: datetime, est_abonne: bool = False,est_super_abonne: bool = False,) -> None:
+    def enregistrer_entree(self, imma: str, date: datetime, est_abonne: bool = False, 
+                           est_super_abonne: bool = False, nom_client: str = "", 
+                           ticket_id: str = "", place_id: str = "") -> None:
         """
         Enregistre un événement d'entrée dans l'historique.
 
@@ -79,6 +92,12 @@ class Historique:
         est_super_abonne : bool, optionnel
             True si le client est super abonné au moment de l'entrée,
             False sinon. Par défaut False.
+        nom_client : str, optionnel
+            Nom du client effectuant l'entrée.
+        ticket_id : str, optionnel
+            Numéro du ticket délivré.
+        place_id : str, optionnel
+            Numéro de la place attribuée.
         """
         evenement = {
             "type": "entree",
@@ -86,12 +105,17 @@ class Historique:
             "date": date,
             "est_abonne": est_abonne,
             "est_super_abonne": est_super_abonne,
+            "nom_client": nom_client,
+            "ticket_id": ticket_id,
+            "place_id": place_id,
         }
         
         self.evenements.append(evenement)
         self._append_to_csv(evenement)
 
-    def enregistrer_sortie(self,imma: str, date: datetime, est_abonne: bool = False,est_super_abonne: bool = False,) -> None:
+    def enregistrer_sortie(self, imma: str, date: datetime, est_abonne: bool = False,
+                           est_super_abonne: bool = False, ticket_id: str = "", 
+                           place_id: str = "", nom_client: str = "") -> None:
         """
         Enregistre un événement de sortie dans l'historique.
 
@@ -107,6 +131,12 @@ class Historique:
         est_super_abonne : bool, optionnel
             True si le client est super abonné au moment de la sortie,
             False sinon.
+        ticket_id : str, optionnel
+            Numéro du ticket utilisé pour la sortie.
+        place_id : str, optionnel
+            Numéro de la place libérée.
+        nom_client : str, optionnel
+            Nom du client demandant le service.
         """
         evenement = {
             "type": "sortie",
@@ -114,12 +144,17 @@ class Historique:
             "date": date,
             "est_abonne": est_abonne,
             "est_super_abonne": est_super_abonne,
+            "ticket_id": ticket_id,
+            "place_id": place_id,
+            "nom_client": nom_client
         }
 
         self.evenements.append(evenement)
         self._append_to_csv(evenement)
 
-    def enregistrer_service(self,imma: str,date: datetime,type_service: str,est_abonne: bool = False, est_super_abonne: bool = False,) -> None:
+    def enregistrer_service(self, imma: str, date: datetime, type_service: str,
+                            est_abonne: bool = False, est_super_abonne: bool = False,
+                            nom_client: str = "", place_id: str = "") -> None:
         """
         Enregistre un événement de service dans l'historique.
 
@@ -138,9 +173,15 @@ class Historique:
         est_super_abonne : bool, optionnel
             True si le client est super abonné au moment du service,
             False sinon.
+        nom_client : str, optionnel
+            Nom du client demandant le service.
+        place_id : str, optionnel
+            Numéro de la place libérée.
+        ticket_id : str, optionnel
+            Numéro du ticket utilisé pour la sortie.
         """
         if type_service not in ("entretien", "maintenance", "livraison"):
-            raise ValueError("Type de service inconnu")
+            pass 
         
         evenement = {
             "type" : "service",
@@ -149,12 +190,15 @@ class Historique:
             "date": date,
             "est_abonne": est_abonne,
             "est_super_abonne": est_super_abonne,
+            "nom_client": nom_client,
+            "place_id": place_id,
+            "ticket_id": ""
         }
 
         self.evenements.append(evenement)
         self._append_to_csv(evenement)
 
-    def evenements_dans_intervalle(self, debut: datetime,fin: datetime) -> List[Dict[str, Any]]:
+    def evenements_dans_intervalle(self, debut: datetime, fin: datetime) -> List[Dict[str, Any]]:
         """
         Renvoie les événements dont la date est comprise dans un intervalle.
 
@@ -205,23 +249,30 @@ class Historique:
             "type_service": evenement.get("type_service") or "",
             "est_abonne": str(bool(evenement.get("est_abonne", False))),
             "est_super_abonne": str(bool(evenement.get("est_super_abonne", False))),
+            # Champs ajoutés
+            "nom_client": evenement.get("nom_client", ""),
+            "ticket_id": evenement.get("ticket_id", ""),
+            "place_id": evenement.get("place_id", "")
         }
 
         fichier = Path(self.fichier_csv)
         fichier_existe = fichier.exists()
 
+        # Liste des colonnes mise à jour
+        fieldnames = [
+            "type",
+            "immat",
+            "date",
+            "type_service",
+            "est_abonne",
+            "est_super_abonne",
+            "nom_client",
+            "ticket_id",
+            "place_id"
+        ]
+
         with fichier.open("a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(
-                f,
-                fieldnames=[
-                    "type",
-                    "immat",
-                    "date",
-                    "type_service",
-                    "est_abonne",
-                    "est_super_abonne",
-                ],
-            )
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
             if not fichier_existe:
                 writer.writeheader()
             writer.writerow(evt_csv)
@@ -271,6 +322,10 @@ class Historique:
                     "type_service": type_service,
                     "est_abonne": est_abonne_str == "True",
                     "est_super_abonne": est_super_abonne_str == "True",
+                    # Récupération des nouveaux champs (avec valeur par défaut vide)
+                    "nom_client": row.get("nom_client", ""),
+                    "ticket_id": row.get("ticket_id", ""),
+                    "place_id": row.get("place_id", "")
                 }
 
                 hist.evenements.append(evenement)
