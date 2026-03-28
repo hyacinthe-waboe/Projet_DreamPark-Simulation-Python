@@ -1,6 +1,6 @@
 # 🚗 Projet Parking MIASHS — Dépôt pédagogique (branches)
 
-Ce dépôt correspond à un **projet scolaire** réalisé dans le cadre de la **Licence MIASHS (UT2J)**.
+Ce dépôt correspond à un **projet scolaire** réalisé en binôme par **Olti Mjeku et Hyacinthe Waboe** dans le cadre de la **Licence MIASHS (UT2J)**.
 Le développement s’est fait **par étapes**, et chaque étape correspond à une **branche**.
 
 ✅ **Important : la branche `main` sert uniquement de page d’accueil** pour s’orienter dans le dépôt.  
@@ -14,7 +14,7 @@ Le développement s’est fait **par étapes**, et chaque étape correspond à u
 
 - **branche : `partie4`**
 
-C’est cette branche qu’il faut utiliser si tu veux :
+C’est cette branche qu’il faut utiliser si vous voulez :
 - lancer l’interface,
 - exécuter les tests,
 - générer la documentation,
@@ -22,17 +22,17 @@ C’est cette branche qu’il faut utiliser si tu veux :
 
 ---
 
-## 🧭 Si tu es perdu dans les branches
+## 🧭 Si vous êtes perdu dans les branches
 
 Chaque branche correspond à une étape (Partie 0, Partie 1, Partie 2, Partie 3, Partie 4…).
 
-✅ Pour t’aider :
+✅ Pour vous aider :
 - **chaque branche possède son README adapté** qui explique :
   - ce qui a été fait dans cette étape,
   - où se trouvent les fichiers importants,
   - comment exécuter / tester cette version.
 
-➡️ Donc si tu changes de branche : lis d’abord le `README.md` de cette branche.
+➡️ Donc si vous changez de branche : lisez d’abord le `README.md` de cette branche.
 
 ---
 
@@ -59,5 +59,5 @@ Dans les branches “partieX”, on retrouve généralement :
 
 ## ✅ Recommandation
 
-➡️ Si tu veux juste utiliser le projet : **va sur `partie4`**.  
-➡️ Si tu veux comprendre l’évolution : parcours `partie0 → partie4` et lis les README de chaque branche.
+➡️ Si vous voulez juste utiliser le projet : **allez sur `partie4`**.  
+➡️ Si Si vous voulez comprendre l’évolution : parcourez `partie0 → partie4` et lis les README de chaque branche.
