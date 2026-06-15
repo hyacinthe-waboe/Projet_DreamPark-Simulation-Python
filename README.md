@@ -1,63 +1,84 @@
-# 🚗 Projet Parking MIASHS — Dépôt pédagogique (branches)
+# DreamPark
 
-Ce dépôt correspond à un **projet scolaire** réalisé en binôme par **Olti Mjeku et Hyacinthe Waboe** dans le cadre de la **Licence MIASHS (UT2J)**.
-Le développement s’est fait **par étapes**, et chaque étape correspond à une **branche**.
+Simulation d'un parking intelligent développée en Python par **Olti Mjeku** et **Hyacinthe Waboe** dans le cadre de la Licence MIASHS à l'Université Toulouse - Jean Jaurès.
 
-✅ **Important : la branche `main` sert uniquement de page d’accueil** pour s’orienter dans le dépôt.  
-➡️ Le code “complet” n’est pas sur `main`.
+La branche `main` contient désormais la version finale. Les branches `partie0` à `partie4` conservent les différentes étapes pédagogiques du projet.
 
----
+## Fonctionnalités
 
-## ⭐ Où est la version finale ?
+- entrée et sortie de véhicules abonnés ou occasionnels ;
+- attribution automatique d'une place ;
+- simulation d'une caméra, d'une borne de ticket, d'un panneau et d'un téléporteur ;
+- gestion des abonnements et des contrats ;
+- services de maintenance, d'entretien, de livraison et de voiturier ;
+- historique des entrées, sorties et services ;
+- statistiques d'occupation, de fréquentation et de recettes ;
+- interface superviseur réalisée avec CustomTkinter ;
+- persistance locale avec SQLite et exports CSV.
 
-👉 La **version finale** (qui regroupe tout le projet, depuis le début jusqu’à la fin) se trouve ici :
+## Architecture
 
-- **branche : `partie4`**
-
-C’est cette branche qu’il faut utiliser si vous voulez :
-- lancer l’interface,
-- exécuter les tests,
-- générer la documentation,
-- avoir l’architecture complète.
-
----
-
-## 🧭 Si vous êtes perdu dans les branches
-
-Chaque branche correspond à une étape (Partie 0, Partie 1, Partie 2, Partie 3, Partie 4…).
-
-✅ Pour vous aider :
-- **chaque branche possède son README adapté** qui explique :
-  - ce qui a été fait dans cette étape,
-  - où se trouvent les fichiers importants,
-  - comment exécuter / tester cette version.
-
-➡️ Donc si vous changez de branche : lisez d’abord le `README.md` de cette branche.
-
----
-
-## 🔀 Comment aller sur la bonne branche
-
-### Voir la liste des branches
-```bash
-git branch -a
+```text
+.
+├── src/
+│   ├── noyau/        # Parking, places, accès et placements
+│   ├── usagers/      # Clients, voitures, abonnements et contrats
+│   ├── materiel/     # Caméra, borne, panneau et téléporteur
+│   ├── services/     # Maintenance, entretien, livraison et voiturier
+│   ├── stats/        # Historique, statistiques et base SQLite
+│   └── interface.py  # Interface graphique
+├── tests/            # Tests unitaires organisés comme le code source
+├── doc/              # Diagramme UML et génération de documentation
+└── run_tests.py      # Lanceur de la suite de tests
 ```
 
----
+## Installation
 
-## 📌 Structure générale (dans les branches du projet)
+Le cœur du projet utilise la bibliothèque standard de Python. L'interface graphique demande une dépendance supplémentaire :
 
-Dans les branches “partieX”, on retrouve généralement :
+```bash
+python -m pip install customtkinter
+```
 
-- `src/` : code source
-- `tests/` : tests unitaires
-- `doc/` : documentation + génération pydoc
-- `run_tests.py` : lanceur de tests (selon la branche)
-- `README.md` : explications spécifiques à la branche
+## Utilisation
 
----
+Lancer l'interface :
 
-## ✅ Recommandation
+```bash
+python src/interface.py
+```
 
-➡️ Si vous voulez juste utiliser le projet : **allez sur `partie4`**.  
-➡️ Si Si vous voulez comprendre l’évolution : parcourez `partie0 → partie4` et lis les README de chaque branche.
+Lancer les tests :
+
+```bash
+python run_tests.py
+```
+
+La suite actuelle contient **119 tests unitaires**.
+
+Générer la documentation technique :
+
+```bash
+python doc/gen_doc.py
+```
+
+## Parcours pédagogique
+
+Les branches retracent la construction progressive du projet :
+
+- `partie0` : initialisation et conception ;
+- `partie1` : cas d'utilisation « se garer » ;
+- `partie2` : sortie du véhicule et services ;
+- `partie3` : historique et statistiques ;
+- `partie4` : interface superviseur et version finale.
+
+## Limites actuelles
+
+- les données sont enregistrées localement ;
+- l'interface représente une vue de supervision, pas un système matériel réel ;
+- le projet est une simulation universitaire et non une solution destinée à la production.
+
+## Auteurs
+
+- **Olti Mjeku**
+- **Hyacinthe Waboe**
