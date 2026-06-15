@@ -1,22 +1,36 @@
-# DreamPark
+<h1 align="center">🅿️ DreamPark</h1>
 
-Simulation d'un parking intelligent développée en Python par **Olti Mjeku** et **Hyacinthe Waboe** dans le cadre de la Licence MIASHS à l'Université Toulouse - Jean Jaurès.
+<p align="center">
+  <strong>Une simulation complète de parking intelligent, de l'entrée du véhicule jusqu'aux statistiques.</strong>
+</p>
 
-La branche `main` contient désormais la version finale. Les branches `partie0` à `partie4` conservent les différentes étapes pédagogiques du projet.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/CustomTkinter-Interface-1F6AA5?style=for-the-badge" alt="CustomTkinter">
+  <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/Tests-119_réussis-2EA44F?style=for-the-badge" alt="119 tests">
+</p>
 
-## Fonctionnalités
+## 🚗 Le projet
 
-- entrée et sortie de véhicules abonnés ou occasionnels ;
-- attribution automatique d'une place ;
-- simulation d'une caméra, d'une borne de ticket, d'un panneau et d'un téléporteur ;
-- gestion des abonnements et des contrats ;
-- services de maintenance, d'entretien, de livraison et de voiturier ;
-- historique des entrées, sorties et services ;
-- statistiques d'occupation, de fréquentation et de recettes ;
-- interface superviseur réalisée avec CustomTkinter ;
-- persistance locale avec SQLite et exports CSV.
+DreamPark est une simulation développée en Python par **Olti Mjeku** et **Hyacinthe Waboe** pendant la Licence MIASHS à l'Université Toulouse - Jean Jaurès.
 
-## Architecture
+Le projet reproduit le fonctionnement d'un parking moderne : accueil des clients, attribution des places, équipements, services, sorties, historique et supervision. La branche `main` contient la version finale, tandis que les branches `partie0` à `partie4` racontent sa construction progressive.
+
+## ✨ Fonctionnalités
+
+- 🚘 entrée et sortie de véhicules abonnés ou occasionnels ;
+- 🅿️ attribution automatique d'une place adaptée ;
+- 📷 simulation d'une caméra et d'une borne de ticket ;
+- 🤖 panneau d'affichage et téléporteur ;
+- ⭐ abonnements, contrats et clients prioritaires ;
+- 🧽 services d'entretien, maintenance, livraison et voiturier ;
+- 📜 historique des entrées, sorties et services ;
+- 📊 statistiques d'occupation, de fréquentation et de recettes ;
+- 🖥️ interface de supervision avec CustomTkinter ;
+- 💾 persistance locale avec SQLite et CSV.
+
+## 🧱 Architecture
 
 ```text
 .
@@ -27,22 +41,20 @@ La branche `main` contient désormais la version finale. Les branches `partie0` 
 │   ├── services/     # Maintenance, entretien, livraison et voiturier
 │   ├── stats/        # Historique, statistiques et base SQLite
 │   └── interface.py  # Interface graphique
-├── tests/            # Tests unitaires organisés comme le code source
-├── doc/              # Diagramme UML et génération de documentation
+├── tests/            # Tests organisés comme le code source
+├── doc/              # Diagramme UML et documentation
 └── run_tests.py      # Lanceur de la suite de tests
 ```
 
-## Installation
+## 🚀 Installation et utilisation
 
-Le cœur du projet utilise la bibliothèque standard de Python. L'interface graphique demande une dépendance supplémentaire :
+Installer la dépendance de l'interface :
 
 ```bash
 python -m pip install customtkinter
 ```
 
-## Utilisation
-
-Lancer l'interface :
+Lancer DreamPark :
 
 ```bash
 python src/interface.py
@@ -54,31 +66,33 @@ Lancer les tests :
 python run_tests.py
 ```
 
-La suite actuelle contient **119 tests unitaires**.
+Résultat actuel : **119 tests sur 119 réussis** ✅
 
-Générer la documentation technique :
+Générer la documentation :
 
 ```bash
 python doc/gen_doc.py
 ```
 
-## Parcours pédagogique
+## 🧭 Une construction par étapes
 
-Les branches retracent la construction progressive du projet :
+| Branche | Étape |
+|---|---|
+| `partie0` | Initialisation et conception |
+| `partie1` | Cas d'utilisation « se garer » |
+| `partie2` | Sortie du véhicule et services |
+| `partie3` | Historique et statistiques |
+| `partie4` | Interface superviseur et version finale |
 
-- `partie0` : initialisation et conception ;
-- `partie1` : cas d'utilisation « se garer » ;
-- `partie2` : sortie du véhicule et services ;
-- `partie3` : historique et statistiques ;
-- `partie4` : interface superviseur et version finale.
-
-## Limites actuelles
+## 🚧 Limites actuelles
 
 - les données sont enregistrées localement ;
-- l'interface représente une vue de supervision, pas un système matériel réel ;
-- le projet est une simulation universitaire et non une solution destinée à la production.
+- l'interface simule une supervision, sans matériel réel connecté ;
+- DreamPark reste un projet universitaire et non un logiciel de production.
 
-## Auteurs
+## 👥 Équipe
 
 - **Olti Mjeku**
 - **Hyacinthe Waboe**
+
+<p align="center"><em>Un projet où chaque nouvelle partie a ajouté une vraie pièce au parking. 🚗</em></p>
